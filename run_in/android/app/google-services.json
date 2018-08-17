@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "808188414561",
+    "firebase_url": "https://runin-d30a7.firebaseio.com",
+    "project_id": "runin-d30a7",
+    "storage_bucket": "runin-d30a7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808188414561:android:0354ca0c79b55f65",
+        "android_client_info": {
+          "package_name": "br.com.runin.runin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "808188414561-uo1vcjk1cs8opgf4rdabub5l05m1ore5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.runin.runin",
+            "certificate_hash": "3ffd509fc888a31bb63d1a81d9e559416068bea9"
+          }
+        },
+        {
+          "client_id": "808188414561-tufgrhb1g30hdhq0j49ocj1ev6ohmvu1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "808188414561-tufgrhb1g30hdhq0j49ocj1ev6ohmvu1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
