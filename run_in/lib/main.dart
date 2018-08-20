@@ -28,7 +28,11 @@ class MyApp extends StatelessWidget {
 
     return new MaterialApp(
       title: 'RunIn',
-      color: Colors.blue,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Colors.black,
+        accentColor: Colors.white
+      ),
       routes: routes,
       home: destination,
     );
