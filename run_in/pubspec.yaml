@@ -12,6 +12,7 @@ dependencies:
   google_sign_in:
   firebase_database:
   intl: ^0.15.7
+  countdown:
 
 dev_dependencies:
   flutter_test:

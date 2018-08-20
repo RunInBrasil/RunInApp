@@ -161,11 +161,13 @@ class _HomePageFrameState extends State<HomePageFrame> {
 
         final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
 
+        final f = new DateFormat('yyyy-MM-dd');
+
         _trainRef = FirebaseDatabase.instance
             .reference()
             .child('trains')
             .child(widget.user.uid)
-            .child('2018-08-19');
+            .child(f.format(new DateTime.now()));
 
 //        _trainRef.once().then((DataSnapshot snapshot) {
 //          print('LOGANDO: Connected to second database and read ${snapshot
@@ -198,10 +200,8 @@ class _HomePageFrameState extends State<HomePageFrame> {
   }
 
   void _goTrainPage() {
+    Navigator
+        .of(context)
+        .pushNamed('/train');
   }
-}
-
-class Train {
-  String time;
-  String speed;
 }

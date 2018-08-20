@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:run_in/home.dart';
 import 'package:run_in/login.dart';
+import 'package:run_in/train.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 final routes = <String, WidgetBuilder> {
   '/home': (BuildContext context) => new HomePage(),
   '/login': (BuildContext context) => new LoginPage(),
+  '/train': (BuildContext context) => new TrainPage()
 };
 
 void main() => runApp(new MyApp());
