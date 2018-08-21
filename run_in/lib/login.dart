@@ -7,13 +7,20 @@ import 'package:google_sign_in/google_sign_in.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
+final String passwordInvalid = 'PlatformException(exception, The password is invalid or the user does not have a password., null)';
+final String userAlreadyExist = 'PlatformException(exception, The email address is already in use by another account., null)';
+
+final incorrectPasswordSnackBar = SnackBar(content: Text('Senha Incorreta'));
+final userAlreadExistSnackbar = SnackBar(content: Text('Este usuário já esta cadastrado'));
+
+
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-          title: Text('RunIn'),
-        ),
+//        appBar: new AppBar(
+//          title: Text('RunIn'),
+//        ),
         body: new LoginPageFrame());
   }
 }
@@ -26,27 +33,208 @@ class LoginPageFrame extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPageFrame> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  var toRegister = false;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
   @override
-  Widget build(BuildContext context) {
-    return new Center(
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new RaisedButton(
-              onPressed: _signIn,
-              color: Colors.blue,
-              child: Text('Login'),
-            ),
-            new RaisedButton(
-              onPressed: _logout,
-              child: Text('Logout'),
-            )
-          ],
-        ),
-    );
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
-  void _signIn() {
+  @override
+  Widget build(BuildContext context) {
+    if (!toRegister) {
+      return new Center(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 256.0),
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                child: Container(
+                  decoration: new BoxDecoration(
+                      borderRadius:
+                          new BorderRadius.all(new Radius.circular(32.0)),
+                      color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: new TextFormField(
+                      style: new TextStyle(color: Colors.black),
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: 'Email',
+                        labelStyle: new TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Container(
+                  decoration: new BoxDecoration(
+                      borderRadius:
+                          new BorderRadius.all(new Radius.circular(32.0)),
+                      color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: new TextFormField(
+                      style: new TextStyle(color: Colors.black),
+                      obscureText: true,
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: 'Senha',
+                        labelStyle: new TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    child: Container(
+                      width: 128.0,
+                      child: new OutlineButton(
+                        shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(32.0),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            toRegister = true;
+                          });
+                        },
+                        child: Text(
+                          'Cadastrar',
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                    child: Container(
+                      width: 128.0,
+                      child: new OutlineButton(
+                        shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(32.0),
+                        ),
+                        onPressed: _signInEmail,
+                        child: Text(
+                          'Entrar',
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: new OutlineButton(
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(32.0),
+                  ),
+                  onPressed: _signInGoogle,
+                  child: ListTile(
+//                    leading: const Icon(Icons.email),
+                    leading: const Image(image: AssetImage('assets/icons/google_icon.png'), height: 24.0,),
+
+                  title: const Text('Entrar com Google'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return new Center(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 256.0),
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              new TextFormField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+              ),
+              new TextFormField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'Senha'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: new OutlineButton(
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(32.0),
+                  ),
+                  onPressed: _registerEmail,
+                  child: Text('Cadastrar'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                child: new OutlineButton(
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(32.0),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      toRegister = false;
+                    });
+                  },
+                  child: ListTile(
+                    leading: const Image(image: AssetImage('assets/icons/gmail_icon.png'), height: 24.0,),
+                    title: const Text('Entrar com email'),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                child: new OutlineButton(
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(32.0),
+                  ),
+                  onPressed: _signInGoogle,
+                  child: ListTile(
+                    leading: const Image(image: AssetImage('assets/icons/google_icon.png'), height: 24.0,),
+                    title: const Text('Entrar com Google'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  void didUpdateWidget(LoginPageFrame oldWidget) {}
+
+  void _signInGoogle() {
+    setState(() {});
+    _showDialog();
+    _signInWithGoogle().then((response) {
+      Navigator.pop(context);
+      _navigateToMainPage(context);
+    }).catchError((onError) {
+      Navigator.pop(context);
+    });
+  }
+
+  void _signInEmail() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -54,9 +242,32 @@ class _LoginPageState extends State<LoginPageFrame> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
     });
-    _signInWithGoogle().then((response) {
-      print('LOG: veio');
+    _showDialog();
+    _signInWithEmail().then((response) {
+      Navigator.pop(context);
       _navigateToMainPage(context);
+    }).catchError((onError) {
+      Navigator.pop(context);
+      print('LOG: ');
+      print(onError.toString());
+      if (onError.toString() == passwordInvalid) {
+        Scaffold.of(context).showSnackBar(incorrectPasswordSnackBar);
+      }
+    });
+  }
+
+  void _registerEmail() {
+    _showDialog();
+    _registerWithEmail().then((response) {
+      Navigator.pop(context);
+      _navigateToMainPage(context);
+    }).catchError((onError) {
+      Navigator.pop(context);
+      print(onError.hashCode);
+      print(onError.toString());
+      if (onError.toString() == userAlreadyExist) {
+        Scaffold.of(context).showSnackBar(userAlreadExistSnackbar);
+      }
     });
   }
 
@@ -82,19 +293,63 @@ class _LoginPageState extends State<LoginPageFrame> {
     return 'signInWithGoogle succeeded: $user';
   }
 
-  Future<String> _logout() async {
-    await _auth.signOut();
-    if (await _auth.currentUser() == null) {
-      print("LOG: User signed out");
-    } else {
-      print("LOG: User not signed out");
-    }
-    return ("out");
+  Future<String> _signInWithEmail() async {
+    print('Inicio');
+    print('LOG: ${ emailController.text}');
+    print('LOG: ${ passwordController.text}');
+
+    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim());
+    assert(user.email != null);
+//    assert(user.displayName != null);
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+
+    print("LOG: User signed in: $user");
+
+    return 'signInWithGoogle succeeded: $user';
+  }
+
+  Future<String> _registerWithEmail() async {
+    print('Inicio refgistro');
+    print('LOG: ${ emailController.text}');
+    print('LOG: ${ passwordController.text}');
+
+    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim());
+
+    assert(user.email != null);
+//    assert(user.displayName != null);
+    assert(!user.isAnonymous);
+    assert(await user.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _auth.currentUser();
+    assert(user.uid == currentUser.uid);
+
+    print("LOG: User registered in: $user");
+
+    return 'register succeeded: $user';
   }
 
   void _navigateToMainPage(BuildContext context) {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-        '/home', (Route<dynamic> route) => false
-    );
+    Navigator
+        .of(context)
+        .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+  }
+
+  void _showDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text('Aguarde um momento...'),
+            content: new CircularProgressIndicator(),
+          );
+        });
   }
 }

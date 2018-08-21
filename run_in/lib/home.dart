@@ -104,6 +104,8 @@ class _HomePageFrameState extends State<HomePageFrame> {
   var trainArray = [];
   DatabaseReference _trainRef;
 
+  var trainStatus = '';
+
   @override
   Widget build(BuildContext context) {
     var todayTrain = Padding(
@@ -113,15 +115,25 @@ class _HomePageFrameState extends State<HomePageFrame> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ListTile(
-            leading: const Icon(Icons.directions_run),
-            title: new Text(getTodayDate()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              new Expanded(
+                child: ListTile(
+                  leading: const Icon(Icons.directions_run),
+                  title: new Text(getTodayDate()),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child:  trainStatus == 'finished' ? new Icon(Icons.beenhere) : null
+              )
+            ],
           ),
           Padding(
               padding: EdgeInsets.only(
                   left: 64.0, top: 8.0, right: 0.0, bottom: 8.0),
-              child: _buildTrainListView()
-          ),
+              child: _buildTrainListView()),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -129,23 +141,46 @@ class _HomePageFrameState extends State<HomePageFrame> {
                 Expanded(
                   child: FlatButton(
                     child: const Text('Concluído'),
-                    onPressed: _setTrainFinished,
+                    onPressed: trainStatus == 'finished' ? null : _setTrainFinished,
                   ),
                 ),
                 Expanded(
                   child: FlatButton(
-                      onPressed: _goTrainPage,
-                      child: const Text('Iniciar')
+                      onPressed: _goTrainPage, child:
+                  trainStatus == 'finished' ? const Text('Refazer') : const Text('Iniciar')
                   ),
                 )
               ],
             ),
           )
         ],
-      )
-      ),
+      )),
     );
     return todayTrain;
+  }
+  
+  void _showDialog() {
+    showDialog(context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: new Text('Concluir treino?'),
+        content: new Text('Dejesa marcar o treino como concluido?'),
+        actions: <Widget>[
+          new FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: new Text('Cancelar')
+          ),
+          new FlatButton(onPressed: () {
+            _trainRef.child('status').set('finished');
+            Navigator.of(context).pop();
+          },
+              child: new Text('Concluir')
+          )
+        ],
+      );
+    });
   }
 
   String getTodayDate() {
@@ -156,9 +191,7 @@ class _HomePageFrameState extends State<HomePageFrame> {
   @override
   void initState() {
     widget.getUser().then((response) {
-
       widget.configureFirebaseApp().then((response) {
-
         final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
 
         final f = new DateFormat('yyyy-MM-dd');
@@ -176,6 +209,7 @@ class _HomePageFrameState extends State<HomePageFrame> {
         _trainRef.onValue.listen((Event event) {
           setState(() {
             trainArray = event.snapshot.value['treino'];
+            trainStatus = event.snapshot.value['status'];
           });
         });
       });
@@ -183,13 +217,19 @@ class _HomePageFrameState extends State<HomePageFrame> {
   }
 
   Widget _buildTrainListView() {
+    if (trainArray.length == 0) {
+      return Container(
+        height: 40.0,
+        child: Text('Nenhum treino para hoje'),
+      );
+    }
 
     return Container(
       height: trainArray.length * 20.0,
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
-          return Text(
-              '${trainArray[index]['time'] / 60}  minutos na velocidade  ${trainArray[index]['speed']}');
+          return Text('${trainArray[index]['time'] /
+                  60}  minutos na velocidade  ${trainArray[index]['speed']}');
         },
         itemCount: trainArray.length,
       ),
@@ -197,11 +237,13 @@ class _HomePageFrameState extends State<HomePageFrame> {
   }
 
   void _setTrainFinished() {
+    _showDialog();
   }
 
   void _goTrainPage() {
-    Navigator
-        .of(context)
-        .pushNamed('/train');
+    if (trainArray.length != 0) {
+      Navigator.of(context).pushNamed('/train');
+    }
+    return null;
   }
 }

@@ -254,6 +254,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         );
       }
       if (!trainStarted) {
+        _trainRef.child('status').set('started');
         if (countDown == null) {
           countDown = new CountDown(new Duration(seconds: timePassed));
           sub = countDown.stream.listen(null);
@@ -272,7 +273,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         });
         sub.onDone(() {
           if (actualStep == trainArray.length - 1) {
-
+            _trainRef.child('status').set('finished');
           } else {
             actualStep++;
             setState(() {
@@ -311,7 +312,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     });
     sub.onDone(() {
       if (actualStep == trainArray.length - 1) {
-
+        _trainRef.child('status').set('finished');
       } else {
         actualStep++;
         setState(() {
