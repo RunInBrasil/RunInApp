@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPageFrame> {
     if (!toRegister) {
       return new Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 256.0),
+          padding: const EdgeInsets.only(left: 32.0, right: 32.0, top: 124.0),
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPageFrame> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 child: new OutlineButton(
                   shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(32.0),
@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPageFrame> {
     } else {
       return new Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 256.0),
+          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 21.0),
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
