@@ -254,7 +254,6 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         );
       }
       if (!trainStarted) {
-        _trainRef.child('status').set('started');
         if (countDown == null) {
           countDown = new CountDown(new Duration(seconds: timePassed));
           sub = countDown.stream.listen(null);

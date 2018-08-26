@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:run_in/home.dart';
+import 'package:run_in/introduction/tutorial.dart';
 import 'package:run_in/login.dart';
 import 'package:run_in/train.dart';
 
@@ -23,9 +24,11 @@ class MyApp extends StatelessWidget {
     // This widget is the root of your application.
     var destination;
     if (_auth.currentUser() != null) {
-      destination = HomePage();
+//      destination = HomePage();
+      destination = Tutorial();
     } else {
-      destination = LoginPage();
+//      destination = LoginPage();
+      destination = Tutorial();
     }
 
     return new MaterialApp(
