@@ -26,13 +26,18 @@ class FourthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     baseContext = context;
-    return new Scaffold(body: new FourthPageFrame());
+    return new Scaffold(body: new FourthPageFrame(_tabController));
   }
 }
 
 class FourthPageFrame extends StatefulWidget {
   FirebaseApp app;
   FirebaseUser user;
+  TabController _tabController;
+
+  FourthPageFrame(TabController tabController) {
+    this._tabController = tabController;
+  }
 
   @override
   _FourthPageFrameState createState() {
@@ -392,5 +397,16 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   }
 
   void _onStopButton() {
+    print('veio0');
+    nextPage();
+  }
+
+  nextPage() {
+    print('veio');
+    final int newIndex = widget._tabController.index + 1;
+    if (newIndex < 0 || newIndex >= widget._tabController.length) {
+      return;
+    }
+    widget._tabController.animateTo(newIndex);
   }
 }

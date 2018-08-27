@@ -19,11 +19,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="fourth_page.dart" pinned="false" current-in-tab="true">
+      <file leaf-file-name="fourth_page.dart" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/introduction/fourth_page.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="358">
-              <caret line="382" column="52" lean-forward="true" selection-start-line="382" selection-start-column="52" selection-end-line="382" selection-end-column="52" />
+            <state relative-caret-position="351">
+              <caret line="28" column="55" lean-forward="true" selection-start-line="28" selection-start-column="55" selection-end-line="28" selection-end-column="55" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -34,9 +34,21 @@
       <file leaf-file-name="tutorial.dart" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/introduction/tutorial.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="14" column="22" lean-forward="false" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+            <state relative-caret-position="100">
+              <caret line="20" column="20" lean-forward="true" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fifth_page.dart" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/lib/introduction/fifth_page.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-50">
+              <caret line="15" column="24" lean-forward="false" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#39#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -54,8 +66,8 @@
       <file leaf-file-name="third_page.dart" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/introduction/third_page.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="7" column="2" lean-forward="false" selection-start-line="7" selection-start-column="2" selection-end-line="11" selection-end-column="3" />
+            <state relative-caret-position="-20">
+              <caret line="35" column="33" lean-forward="false" selection-start-line="35" selection-start-column="33" selection-end-line="35" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -64,8 +76,18 @@
       <file leaf-file-name="second_page.dart" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/introduction/second_page.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="475">
-              <caret line="100" column="2" lean-forward="false" selection-start-line="100" selection-start-column="2" selection-end-line="106" selection-end-column="3" />
+            <state relative-caret-position="520">
+              <caret line="103" column="13" lean-forward="true" selection-start-line="103" selection-start-column="13" selection-end-line="103" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="login.dart" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/login.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="352">
+              <caret line="338" column="2" lean-forward="false" selection-start-line="338" selection-start-column="2" selection-end-line="342" selection-end-column="3" />
               <folding />
             </state>
           </provider>
@@ -108,8 +130,8 @@
       <find>button</find>
       <find>trainArray</find>
       <find>_getLabel</find>
-      <find>_getSpee</find>
       <find>speedLa</find>
+      <find>_getSpee</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -134,7 +156,6 @@
         <option value="$PROJECT_DIR$/lib/introduction/firstPage.dart" />
         <option value="$PROJECT_DIR$/lib/introduction/tabs.dart" />
         <option value="$PROJECT_DIR$/lib/introduction/fisrtPage.dart" />
-        <option value="$PROJECT_DIR$/lib/introduction/fifth_page.dart" />
         <option value="$PROJECT_DIR$/lib/introduction/sixth_page.dart" />
         <option value="$PROJECT_DIR$/lib/main.dart" />
         <option value="$PROJECT_DIR$/lib/introduction/first_page.dart" />
@@ -142,9 +163,10 @@
         <option value="$PROJECT_DIR$/lib/tools/myDivider.dart" />
         <option value="$PROJECT_DIR$/lib/tools/roundedOutlineButtom.dart" />
         <option value="$PROJECT_DIR$/lib/introduction/third_page.dart" />
-        <option value="$PROJECT_DIR$/lib/introduction/tutorial.dart" />
         <option value="$PROJECT_DIR$/lib/train.dart" />
         <option value="$PROJECT_DIR$/lib/introduction/fourth_page.dart" />
+        <option value="$PROJECT_DIR$/lib/introduction/tutorial.dart" />
+        <option value="$PROJECT_DIR$/lib/introduction/fifth_page.dart" />
       </list>
     </option>
   </component>
@@ -672,26 +694,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/login.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2355">
-          <caret line="161" column="73" lean-forward="false" selection-start-line="161" selection-start-column="73" selection-end-line="161" selection-end-column="73" />
-          <folding>
-            <element signature="e#0#20#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/introduction/fisrtPage.dart" />
     <entry file="file://$PROJECT_DIR$/lib/introduction/sixth_page.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="11" lean-forward="false" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/introduction/fifth_page.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="11" lean-forward="false" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
@@ -759,30 +763,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/introduction/second_page.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="100" column="2" lean-forward="false" selection-start-line="100" selection-start-column="2" selection-end-line="106" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/introduction/third_page.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="7" column="2" lean-forward="false" selection-start-line="7" selection-start-column="2" selection-end-line="11" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/introduction/tutorial.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="14" column="22" lean-forward="false" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/train.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="622">
@@ -793,10 +773,52 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/introduction/fourth_page.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
-          <caret line="382" column="52" lean-forward="true" selection-start-line="382" selection-start-column="52" selection-end-line="382" selection-end-column="52" />
+        <state relative-caret-position="351">
+          <caret line="28" column="55" lean-forward="true" selection-start-line="28" selection-start-column="55" selection-end-line="28" selection-end-column="55" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/introduction/third_page.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-20">
+          <caret line="35" column="33" lean-forward="false" selection-start-line="35" selection-start-column="33" selection-end-line="35" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/introduction/tutorial.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="20" column="20" lean-forward="true" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/introduction/second_page.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="520">
+          <caret line="103" column="13" lean-forward="true" selection-start-line="103" selection-start-column="13" selection-end-line="103" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/login.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="338" column="2" lean-forward="false" selection-start-line="338" selection-start-column="2" selection-end-line="342" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/introduction/fifth_page.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-50">
+          <caret line="15" column="24" lean-forward="false" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
