@@ -37,15 +37,8 @@ class TutorialState extends State<Tutorial>
     super.dispose();
   }
 
-  void _nextPage() {
-    final int newIndex = _tabController.index + 1;
-    if (newIndex < 0 || newIndex >= _tabController.length) return;
-    _tabController.animateTo(newIndex);
-  }
-
   @override
   Widget build(BuildContext context) {
-    print(_tabController.length);
     return TabBarView(
         controller: _tabController,
         children: pages);

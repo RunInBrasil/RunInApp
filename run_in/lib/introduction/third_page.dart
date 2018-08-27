@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:run_in/tools/myDivider.dart';
 import 'package:run_in/tools/roundedOutlineButtom.dart';
@@ -35,34 +37,35 @@ class ThirdPage extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Queremos saber um pouco sobre você, os diga mais ou menos seu nível de treino.',
+                'Nos diga quantas vezes você pretende treinar por semana.',
                 style: TextStyle(fontSize: 16.0),
               ),
             ),
           ),
           myDivider(),
           myRoundedOutlineButtom(
-            text: 'Nunca corro',
-              onPressed: _onButtonPressed
+            text: 'Duas vezes',
+              onPressed: () => _onButtonPressed(2)
           ),
           myRoundedOutlineButtom(
-              text: 'Uma vez por semana',
-              onPressed: _onButtonPressed
+              text: 'Três vezes',
+              onPressed: () => _onButtonPressed(3)
           ),
           myRoundedOutlineButtom(
-              text: 'Três vezes por semana',
-              onPressed: _onButtonPressed
+              text: 'Quatro vezes',
+              onPressed: () => _onButtonPressed(4)
           ),
           myRoundedOutlineButtom(
-              text: 'Todo dia',
-              onPressed: _onButtonPressed
+              text: 'Cinco vezes',
+              onPressed: () => _onButtonPressed(5)
           )
         ],
       ),
     );
   }
 
-  void _onButtonPressed() {
+  void _onButtonPressed(int numOfDays) {
+    _saveDaysPerWeek(numOfDays);
     nextPage();
   }
 
@@ -72,5 +75,13 @@ class ThirdPage extends StatelessWidget {
       return;
     }
     _tabController.animateTo(newIndex);
+  }
+
+  void _saveDaysPerWeek(int numOfDays) async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    FirebaseDatabase.instance.reference().child('train')
+    .child(user.uid)
+    .child('days_per_week')
+    .set(numOfDays);
   }
 }

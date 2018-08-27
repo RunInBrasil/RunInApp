@@ -94,6 +94,13 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       });
   }
 
+
+  @override
+  void dispose() {
+    percentageAnimationController.dispose();
+    super.dispose();
+  }
+
   List _buildPerfomanceTest() {
     var test = new List(18);
 
@@ -397,12 +404,25 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   }
 
   void _onStopButton() {
-    print('veio0');
-    nextPage();
+    saveUserEvaluation().then((response) {
+      nextPage();
+    });
+  }
+
+  Future saveUserEvaluation() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    FirebaseDatabase.instance.reference().child('trains')
+        .child(user.uid)
+        .child('evaluation')
+        .child('status').set('finished');
+
+    FirebaseDatabase.instance.reference().child('trains')
+        .child(user.uid)
+        .child('evaluation')
+        .child('value').set(trainArray[actualStep]['speed']);
   }
 
   nextPage() {
-    print('veio');
     final int newIndex = widget._tabController.index + 1;
     if (newIndex < 0 || newIndex >= widget._tabController.length) {
       return;
