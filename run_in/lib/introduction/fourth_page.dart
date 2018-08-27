@@ -178,26 +178,58 @@ class _FourthPageFrameState extends State<FourthPageFrame>
     var playButton = new Padding(
       padding: EdgeInsets.all(0.0),
       child: Center(
-        heightFactor: 1.5,
-        child: Container(
-          height: 96.0,
-          width: 96.0,
-          child: BackdropFilter(
-            filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-            child: new FlatButton(
-              color: Colors.transparent,
-              onPressed: _onPlayButton,
-              shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(64.0),
+        heightFactor: 2.0,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(right: 32.0, left: 32.0),
+              child: Container(
+                height: 96.0,
+                width: 96.0,
+                child: BackdropFilter(
+                  filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: new FlatButton(
+                    color: Colors.transparent,
+                    onPressed: _onPlayButton,
+                    shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(64.0),
+                    ),
+                    child: Icon(
+                        timePassed == 0 && actualStep == trainArray.length - 1
+                            ? Icons.beenhere
+                            : trainStarted ? Icons.pause : Icons.directions_run,
+                        size: 32.0,
+                        color: Colors.white),
+                  ),
+                ),
               ),
-              child: Icon(
-                  timePassed == 0 && actualStep == trainArray.length - 1
-                      ? Icons.beenhere
-                      : trainStarted ? Icons.pause : Icons.directions_run,
-                  size: 32.0,
-                  color: Colors.white),
             ),
-          ),
+            !trainStarted ? Padding(
+              padding: const EdgeInsets.only(left: 32.0, right: 32.0),
+              child: Container(
+                height: 96.0,
+                width: 96.0,
+                child: BackdropFilter(
+                  filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: new FlatButton(
+                    color: Colors.transparent,
+                    onPressed: _onStopButton,
+                    shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(64.0),
+                    ),
+                    child: Icon(
+                        timePassed == 0 && actualStep == trainArray.length - 1
+                            ? Icons.beenhere
+                            : trainStarted ? Icons.pause : Icons.stop,
+                        size: 32.0,
+                        color: Colors.white),
+                  ),
+                ),
+              ),
+            ) : Container(width: 0.0,),
+          ],
         ),
       ),
     );
@@ -357,5 +389,8 @@ class _FourthPageFrameState extends State<FourthPageFrame>
         });
       }
     });
+  }
+
+  void _onStopButton() {
   }
 }
