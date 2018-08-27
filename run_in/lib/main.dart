@@ -13,7 +13,8 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final routes = <String, WidgetBuilder> {
   '/home': (BuildContext context) => new HomePage(),
   '/login': (BuildContext context) => new LoginPage(),
-  '/train': (BuildContext context) => new TrainPage()
+  '/train': (BuildContext context) => new TrainPage(),
+  '/tutorial': (BuildContext context) => new Tutorial()
 };
 
 void main() => runApp(new MyApp());
@@ -24,11 +25,11 @@ class MyApp extends StatelessWidget {
     // This widget is the root of your application.
     var destination;
     if (_auth.currentUser() != null) {
-//      destination = HomePage();
-      destination = Tutorial();
+      destination = HomePage();
+//      destination = Tutorial();
     } else {
-//      destination = LoginPage();
-      destination = Tutorial();
+      destination = LoginPage();
+//      destination = Tutorial();
     }
 
     return new MaterialApp(

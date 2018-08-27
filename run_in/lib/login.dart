@@ -1,18 +1,24 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
-final String passwordInvalid = 'PlatformException(exception, The password is invalid or the user does not have a password., null)';
-final String userAlreadyExist = 'PlatformException(exception, The email address is already in use by another account., null)';
+final String passwordInvalid =
+    'PlatformException(exception, The password is invalid or the user does not have a password., null)';
+final String userAlreadyExist =
+    'PlatformException(exception, The email address is already in use by another account., null)';
 
 final incorrectPasswordSnackBar = SnackBar(content: Text('Senha Incorreta'));
-final userAlreadExistSnackbar = SnackBar(content: Text('Este usuário já esta cadastrado'));
-
+final userAlreadExistSnackbar =
+    SnackBar(content: Text('Este usuário já esta cadastrado'));
+final errorOnRetrieveEvaluation = SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
 
 class LoginPage extends StatelessWidget {
   @override
@@ -27,9 +33,30 @@ class LoginPage extends StatelessWidget {
 
 class LoginPageFrame extends StatefulWidget {
   var title = 'RunIn';
+  FirebaseApp app;
 
   @override
-  _LoginPageState createState() => new _LoginPageState();
+  _LoginPageState createState() {
+    configureFirebaseApp();
+    return new _LoginPageState();
+  }
+
+  Future configureFirebaseApp() async {
+    app = await FirebaseApp.configure(
+      name: 'db2',
+      options: Platform.isIOS
+          ? const FirebaseOptions(
+              googleAppID: '1:808188414561:ios:7e6d93c2f42792e9',
+              gcmSenderID: '808188414561',
+              databaseURL: 'https://runin-d30a7.firebaseio.com',
+            )
+          : const FirebaseOptions(
+              googleAppID: '1:808188414561:android:0354ca0c79b55f65',
+              apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
+              databaseURL: 'https://runin-d30a7.firebaseio.com',
+            ),
+    );
+  }
 }
 
 class _LoginPageState extends State<LoginPageFrame> {
@@ -146,9 +173,12 @@ class _LoginPageState extends State<LoginPageFrame> {
                   onPressed: _signInGoogle,
                   child: ListTile(
 //                    leading: const Icon(Icons.email),
-                    leading: const Image(image: AssetImage('assets/icons/google_icon.png'), height: 24.0,),
+                    leading: const Image(
+                      image: AssetImage('assets/icons/google_icon.png'),
+                      height: 24.0,
+                    ),
 
-                  title: const Text('Entrar com Google'),
+                    title: const Text('Entrar com Google'),
                   ),
                 ),
               ),
@@ -195,7 +225,10 @@ class _LoginPageState extends State<LoginPageFrame> {
                     });
                   },
                   child: ListTile(
-                    leading: const Image(image: AssetImage('assets/icons/gmail_icon.png'), height: 24.0,),
+                    leading: const Image(
+                      image: AssetImage('assets/icons/gmail_icon.png'),
+                      height: 24.0,
+                    ),
                     title: const Text('Entrar com email'),
                   ),
                 ),
@@ -208,7 +241,10 @@ class _LoginPageState extends State<LoginPageFrame> {
                   ),
                   onPressed: _signInGoogle,
                   child: ListTile(
-                    leading: const Image(image: AssetImage('assets/icons/google_icon.png'), height: 24.0,),
+                    leading: const Image(
+                      image: AssetImage('assets/icons/google_icon.png'),
+                      height: 24.0,
+                    ),
                     title: const Text('Entrar com Google'),
                   ),
                 ),
@@ -227,8 +263,16 @@ class _LoginPageState extends State<LoginPageFrame> {
     setState(() {});
     _showDialog();
     _signInWithGoogle().then((response) {
-      Navigator.pop(context);
-      _navigateToMainPage(context);
+      _getEvaluationStatus().then((response) {
+        Navigator.pop(context);
+        if (response == 'finished') {
+          _navigateToMainPage(context);
+        } else {
+          _navigateToTutorialPage(context);
+        }
+      }).catchError((onError) {
+        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
+      });
     }).catchError((onError) {
       Navigator.pop(context);
     });
@@ -244,8 +288,16 @@ class _LoginPageState extends State<LoginPageFrame> {
     });
     _showDialog();
     _signInWithEmail().then((response) {
-      Navigator.pop(context);
-      _navigateToMainPage(context);
+      _getEvaluationStatus().then((response) {
+        Navigator.pop(context);
+        if (response == 'finished') {
+          _navigateToMainPage(context);
+        } else {
+          _navigateToTutorialPage(context);
+        }
+      }).catchError((onError) {
+        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
+      });
     }).catchError((onError) {
       Navigator.pop(context);
       print('LOG: ');
@@ -259,8 +311,16 @@ class _LoginPageState extends State<LoginPageFrame> {
   void _registerEmail() {
     _showDialog();
     _registerWithEmail().then((response) {
-      Navigator.pop(context);
-      _navigateToMainPage(context);
+      _getEvaluationStatus().then((response) {
+        Navigator.pop(context);
+        if (response == 'finished') {
+          _navigateToMainPage(context);
+        } else {
+          _navigateToTutorialPage(context);
+        }
+      }).catchError((onError) {
+        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
+      });
     }).catchError((onError) {
       Navigator.pop(context);
       print(onError.hashCode);
@@ -272,7 +332,6 @@ class _LoginPageState extends State<LoginPageFrame> {
   }
 
   Future<String> _signInWithGoogle() async {
-    print('Inicio');
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -288,16 +347,10 @@ class _LoginPageState extends State<LoginPageFrame> {
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
 
-    print("LOG: User signed in: $user");
-
     return 'signInWithGoogle succeeded: $user';
   }
 
   Future<String> _signInWithEmail() async {
-    print('Inicio');
-    print('LOG: ${ emailController.text}');
-    print('LOG: ${ passwordController.text}');
-
     final FirebaseUser user = await _auth.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim());
@@ -308,8 +361,6 @@ class _LoginPageState extends State<LoginPageFrame> {
 
     final FirebaseUser currentUser = await _auth.currentUser();
     assert(user.uid == currentUser.uid);
-
-    print("LOG: User signed in: $user");
 
     return 'signInWithGoogle succeeded: $user';
   }
@@ -342,6 +393,12 @@ class _LoginPageState extends State<LoginPageFrame> {
         .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
   }
 
+  void _navigateToTutorialPage(BuildContext context) {
+    Navigator
+        .of(context)
+        .pushNamedAndRemoveUntil('/tutorial', (Route<dynamic> route) => false);
+  }
+
   void _showDialog() {
     showDialog(
         context: context,
@@ -351,5 +408,19 @@ class _LoginPageState extends State<LoginPageFrame> {
             content: new CircularProgressIndicator(),
           );
         });
+  }
+
+  Future<String> _getEvaluationStatus() async {
+    FirebaseUser user = await _auth.currentUser();
+    DatabaseReference _evaluationRef = FirebaseDatabase.instance
+        .reference()
+        .child('trains')
+        .child(user.uid)
+        .child('evaluation')
+        .child('status');
+
+    _evaluationRef.once().then((DataSnapshot snapshot) {
+      return snapshot.value;
+    });
   }
 }

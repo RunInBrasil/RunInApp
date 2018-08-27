@@ -103,6 +103,7 @@ class HomePageFrame extends StatefulWidget {
 class _HomePageFrameState extends State<HomePageFrame> {
   var trainArray = [];
   DatabaseReference _trainRef;
+  String evaluationStatus;
 
   var trainStatus = '';
 
@@ -125,9 +126,10 @@ class _HomePageFrameState extends State<HomePageFrame> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child:  trainStatus == 'finished' ? new Icon(Icons.beenhere) : null
-              )
+                  padding: const EdgeInsets.all(16.0),
+                  child: trainStatus == 'finished'
+                      ? new Icon(Icons.beenhere)
+                      : null)
             ],
           ),
           Padding(
@@ -141,14 +143,16 @@ class _HomePageFrameState extends State<HomePageFrame> {
                 Expanded(
                   child: FlatButton(
                     child: const Text('Concluído'),
-                    onPressed: trainStatus == 'finished' ? null : _setTrainFinished,
+                    onPressed:
+                        trainStatus == 'finished' ? null : _setTrainFinished,
                   ),
                 ),
                 Expanded(
                   child: FlatButton(
-                      onPressed: _goTrainPage, child:
-                  trainStatus == 'finished' ? const Text('Refazer') : const Text('Iniciar')
-                  ),
+                      onPressed: _goTrainPage,
+                      child: trainStatus == 'finished'
+                          ? const Text('Refazer')
+                          : const Text('Iniciar')),
                 )
               ],
             ),
@@ -158,29 +162,29 @@ class _HomePageFrameState extends State<HomePageFrame> {
     );
     return todayTrain;
   }
-  
+
   void _showDialog() {
-    showDialog(context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: new Text('Concluir treino?'),
-        content: new Text('Dejesa marcar o treino como concluido?'),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: new Text('Cancelar')
-          ),
-          new FlatButton(onPressed: () {
-            _trainRef.child('status').set('finished');
-            Navigator.of(context).pop();
-          },
-              child: new Text('Concluir')
-          )
-        ],
-      );
-    });
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text('Concluir treino?'),
+            content: new Text('Dejesa marcar o treino como concluido?'),
+            actions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text('Cancelar')),
+              new FlatButton(
+                  onPressed: () {
+                    _trainRef.child('status').set('finished');
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text('Concluir'))
+            ],
+          );
+        });
   }
 
   String getTodayDate() {
@@ -192,6 +196,20 @@ class _HomePageFrameState extends State<HomePageFrame> {
   void initState() {
     widget.getUser().then((response) {
       widget.configureFirebaseApp().then((response) {
+        DatabaseReference _evaluationRef = FirebaseDatabase.instance
+            .reference()
+            .child('trains')
+            .child(widget.user.uid)
+            .child('evaluation')
+            .child('status');
+
+        _evaluationRef.once().then((DataSnapshot snapshot) {
+          evaluationStatus = snapshot.value;
+          if (evaluationStatus != 'finished') {
+            _goTutorialPage();
+          }
+        });
+
         final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
 
         final f = new DateFormat('yyyy-MM-dd');
@@ -229,7 +247,7 @@ class _HomePageFrameState extends State<HomePageFrame> {
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
           return Text('${trainArray[index]['time'] /
-                  60}  minutos na velocidade  ${trainArray[index]['speed']}');
+              60}  minutos na velocidade  ${trainArray[index]['speed']}');
         },
         itemCount: trainArray.length,
       ),
@@ -244,6 +262,11 @@ class _HomePageFrameState extends State<HomePageFrame> {
     if (trainArray.length != 0) {
       Navigator.of(context).pushNamed('/train');
     }
+    return null;
+  }
+
+  void _goTutorialPage() {
+    Navigator.of(context).pushNamed('/tutorial');
     return null;
   }
 }
