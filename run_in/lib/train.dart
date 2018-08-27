@@ -11,7 +11,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:run_in/tools/circlePainter.dart';
 import 'package:countdown/countdown.dart';
 
-
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class TrainPage extends StatelessWidget {
@@ -69,7 +68,6 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   var sub;
   final formatter = new NumberFormat("##00");
 
-
   @override
   void initState() {
     widget.getUser().then((response) async {
@@ -96,7 +94,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     });
 
     percentageAnimationController = new AnimationController(
-        vsync: this, duration: new Duration(milliseconds: 1000))
+        vsync: this, duration: new Duration(milliseconds: 10000))
       ..addListener(() {
         setState(() {
           percentage = lerpDouble(
@@ -142,10 +140,8 @@ class _TrainPageFrameState extends State<TrainPageFrame>
 //                            percentageAnimationController.forward(from: 0.0);
 //                          });
 //                        }),
-                    child: new Text(_getSpeedlabel(),
-                      style: new TextStyle(
-                          fontSize: 128.0
-                      ),
+                    child: new Column(
+                      children: _getSpeedlabel(),
                     ),
                   ),
                 ),
@@ -168,9 +164,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
 
     var label = new Padding(
       padding: EdgeInsets.all(16.0),
-      child: new Center(
-          child: _getLabel()
-      ),
+      child: new Center(child: _getLabel()),
     );
 
     var playButton = new Padding(
@@ -188,8 +182,12 @@ class _TrainPageFrameState extends State<TrainPageFrame>
               shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(64.0),
               ),
-              child: Icon(timePassed == 0 && actualStep == trainArray.length - 1 ? Icons.beenhere : trainStarted ? Icons.pause : Icons.directions_run,
-                  size: 32.0, color: Colors.white),
+              child: Icon(
+                  timePassed == 0 && actualStep == trainArray.length - 1
+                      ? Icons.beenhere
+                      : trainStarted ? Icons.pause : Icons.directions_run,
+                  size: 32.0,
+                  color: Colors.white),
             ),
           ),
         ),
@@ -218,30 +216,35 @@ class _TrainPageFrameState extends State<TrainPageFrame>
       if (timePassed <= 15) {
         if (actualStep == trainArray.length - 1) {
           if (timePassed == 0) {
-            return new Text('Ótimo treino',
+            return new Text(
+              'Ótimo treino',
               style: TextStyle(fontSize: 20.0),
             );
           }
-          return new Text('Estamos acabando',
+          return new Text(
+            'Estamos acabando',
             style: TextStyle(fontSize: 20.0),
           );
-
         }
-        return new Text('Preparar para a proxima velocidade...',
+        return new Text(
+          'Preparar para a proxima velocidade...',
           style: TextStyle(fontSize: 20.0),
         );
       }
-      return new Text('${actualStep + 1}o Round',
+      return new Text(
+        '${actualStep + 1}o Round',
         style: TextStyle(fontSize: 24.0),
       );
     }
     if (!trainStarted &&
         (actualStep != 0 || timePassed != trainArray[actualStep]['time'])) {
-      return new Text('Vamos lá, continue...',
+      return new Text(
+        'Vamos lá, continue...',
         style: TextStyle(fontSize: 24.0),
       );
     }
-    return new Text('Vamos começar...',
+    return new Text(
+      'Vamos começar...',
       style: TextStyle(fontSize: 24.0),
     );
   }
@@ -249,9 +252,9 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   void _onPlayButton() {
     setState(() {
       if (timePassed == 0 && actualStep == trainArray.length - 1) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            '/home', (Route<dynamic> route) => false
-        );
+        Navigator
+            .of(context)
+            .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
       }
       if (!trainStarted) {
         if (countDown == null) {
@@ -261,14 +264,16 @@ class _TrainPageFrameState extends State<TrainPageFrame>
           sub.resume();
         }
         sub.onData((Duration d) {
-          setState(() {
-            percentage = newPercentage;
-            timePassed = d.inSeconds;
-            newPercentage =
-                (trainArray[actualStep]['time'] - timePassed) * 100 /
-                    trainArray[actualStep]['time'];
-            percentageAnimationController.forward(from: 0.0);
-          });
+          if (d.inSeconds != timePassed) {
+            setState(() {
+              percentage = newPercentage;
+              timePassed = d.inSeconds;
+              newPercentage = (trainArray[actualStep]['time'] - timePassed) *
+                  100 /
+                  trainArray[actualStep]['time'];
+              percentageAnimationController.forward(from: 0.0);
+            });
+          }
         });
         sub.onDone(() {
           if (actualStep == trainArray.length - 1) {
@@ -289,25 +294,50 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     });
   }
 
-  String _getSpeedlabel() {
+  List<Widget> _getSpeedlabel() {
     if (timePassed <= 15 && actualStep != trainArray.length - 1) {
-      return '${trainArray[actualStep + 1]['speed']}';
+      return [
+        new Text(
+          'Próxima velocidade...',
+          style: new TextStyle(fontSize: 16.0),
+        ),
+        new Text(
+          '${trainArray[actualStep + 1]['speed']}',
+          style: new TextStyle(fontSize: 96.0),
+        ),
+        new Text(
+          'Km/h',
+          style: new TextStyle(fontSize: 16.0),
+        )
+      ];
     }
-    return '${trainArray[actualStep]['speed']}';
+
+    return [
+      new Text(
+        '${trainArray[actualStep]['speed']}',
+        style: new TextStyle(fontSize: 96.0),
+      ),
+      new Text(
+        'Km/h',
+        style: new TextStyle(fontSize: 16.0),
+      )
+    ];
   }
 
   void registerNewCountdown() {
     countDown = new CountDown(new Duration(seconds: timePassed));
     sub = countDown.stream.listen(null);
     sub.onData((Duration d) {
-      setState(() {
-        percentage = newPercentage;
-        timePassed = d.inSeconds;
-        newPercentage =
-            (trainArray[actualStep]['time'] - timePassed) * 100 /
-                trainArray[actualStep]['time'];
-        percentageAnimationController.forward(from: 0.0);
-      });
+      if (d.inSeconds != timePassed) {
+        setState(() {
+          percentage = newPercentage;
+          timePassed = d.inSeconds;
+          newPercentage = (trainArray[actualStep]['time'] - timePassed) *
+              100 /
+              trainArray[actualStep]['time'];
+          percentageAnimationController.forward(from: 0.0);
+        });
+      }
     });
     sub.onDone(() {
       if (actualStep == trainArray.length - 1) {

@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class myRoundedOutlineButtom extends StatelessWidget {
-
   final String text;
   final Function onPressed;
 
@@ -15,7 +14,6 @@ class myRoundedOutlineButtom extends StatelessWidget {
         assert(onPressed != null),
         super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,16 +22,18 @@ class myRoundedOutlineButtom extends StatelessWidget {
         child: Container(
           width: 200.0,
           height: 50.0,
-          child: new OutlineButton(
-            borderSide: BorderSide(color: Colors.white),
-            color: Colors.transparent,
-            onPressed: onPressed,
-            shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(24.0),
-            ),
-            child: BackdropFilter(
-                filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                child: Text(text)),
+          child: BackdropFilter(
+            filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+            child: new OutlineButton(
+                borderSide: BorderSide(color: Colors.white),
+                color: Colors.transparent,
+                onPressed: onPressed,
+                shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(24.0),
+                ),
+                child: BackdropFilter(
+                    filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    child: Text(text))),
           ),
         ),
       ),

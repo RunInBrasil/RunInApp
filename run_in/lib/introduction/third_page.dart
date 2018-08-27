@@ -63,6 +63,14 @@ class ThirdPage extends StatelessWidget {
   }
 
   void _onButtonPressed() {
-    print('OLAAAA');
+    nextPage();
+  }
+
+  nextPage() {
+    final int newIndex = _tabController.index + 1;
+    if (newIndex < 0 || newIndex >= _tabController.length) {
+      return;
+    }
+    _tabController.animateTo(newIndex);
   }
 }

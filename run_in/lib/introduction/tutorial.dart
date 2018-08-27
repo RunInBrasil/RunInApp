@@ -20,12 +20,12 @@ class TutorialState extends State<Tutorial>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     pages = [
       FirstPage(_tabController),
       SecondPage(_tabController),
       ThirdPage(_tabController),
-//      FourthPage(_tabController),
+      FourthPage(_tabController),
 //      FifthPage(_tabController),
 //      SixthPage(_tabController)
     ];
