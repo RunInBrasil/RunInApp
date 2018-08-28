@@ -2,7 +2,7 @@ class TrainBulder {
   int speedTest;
   int daysPerWeek;
   List treino = [];
-  const totalNumberOfWeeks = 12;
+  static const totalNumberOfWeeks = 12;
 
   Map<String, TrainModel> trainModel;
 
@@ -23,8 +23,8 @@ class TrainBulder {
     'intenso1',
     'moderado',
     'intenso3',
-    'moderado'
-  ]
+    'moderado',
+  ];
 
   TrainBulder(int daysPerWeek, int speedTest) {
     this.speedTest = speedTest;

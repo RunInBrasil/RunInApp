@@ -84,8 +84,13 @@ class _TrainPageFrameState extends State<TrainPageFrame>
             .value}');
         setState(() {
           trainArray = snapshot.value['treino'];
-          timePassed = trainArray[actualStep]['time'];
-        });
+          trainArray = [];
+          for (int i = 0; i < (snapshot.value['treino']).length; i++) {
+            if (snapshot.value['treino'][i] != null) {
+              print(trainArray.length);
+              trainArray.add(snapshot.value['treino'][i]);
+            }
+          }        });
       });
     });
 

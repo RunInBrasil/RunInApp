@@ -226,8 +226,14 @@ class _HomePageFrameState extends State<HomePageFrame> {
         _trainRef.keepSynced(true);
         _trainRef.onValue.listen((Event event) {
           setState(() {
-            trainArray = event.snapshot.value['treino'];
+            trainArray = [];
             trainStatus = event.snapshot.value['status'];
+            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
+              if (event.snapshot.value['treino'][i] != null) {
+                print(trainArray.length);
+                trainArray.add(event.snapshot.value['treino'][i]);
+              }
+            }
           });
         });
       });
