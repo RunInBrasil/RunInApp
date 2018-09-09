@@ -15,17 +15,30 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class TrainPage extends StatelessWidget {
   BuildContext baseContext;
+  var trainArray = [];
+
+  TrainPage(List trainArray) {
+    this.trainArray = trainArray;
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (trainArray == null || trainArray.length == 0) {
+      Navigator.of(baseContext).pushNamed('/home');
+    }
     baseContext = context;
-    return new Scaffold(body: new TrainPageFrame());
+    return new Scaffold(body: new TrainPageFrame(trainArray));
   }
 }
 
 class TrainPageFrame extends StatefulWidget {
   FirebaseApp app;
   FirebaseUser user;
+  var trainArray = [];
+
+  TrainPageFrame(List trainArray) {
+    this.trainArray = trainArray;
+  }
 
   @override
   _TrainPageFrameState createState() {
@@ -56,7 +69,6 @@ class TrainPageFrame extends StatefulWidget {
 
 class _TrainPageFrameState extends State<TrainPageFrame>
     with TickerProviderStateMixin {
-  var trainArray = [];
   DatabaseReference _trainRef;
   var percentage = 0.0;
   double newPercentage = 0.0;
@@ -71,30 +83,33 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   @override
   void initState() {
     widget.getUser().then((response) async {
-      final f = new DateFormat('yyyy-MM-dd');
+//      final f = new DateFormat('yyyy-MM-dd');
 
-      _trainRef = FirebaseDatabase.instance
-          .reference()
-          .child('trains')
-          .child(widget.user.uid)
-          .child(f.format(new DateTime.now()));
+//      _trainRef = FirebaseDatabase.instance
+//          .reference()
+//          .child('trains')
+//          .child(widget.user.uid)
+//          .child(f.format(new DateTime.now()));
+//
+//      await _trainRef.once().then((DataSnapshot snapshot) {
+//        print('LOGANDO: Connected to second database and read ${snapshot
+//            .value}');
+//        setState(() {
+//          trainArray = snapshot.value['treino'];
+//          trainArray = [];
+//          for (int i = 0; i < (snapshot.value['treino']).length; i++) {
+//            if (snapshot.value['treino'][i] != null) {
+//              print(trainArray.length);
+//              trainArray.add(snapshot.value['treino'][i]);
+//            }
+//          }
+//        });
+//      });
 
-      await _trainRef.once().then((DataSnapshot snapshot) {
-        print('LOGANDO: Connected to second database and read ${snapshot
-            .value}');
-        setState(() {
-          trainArray = snapshot.value['treino'];
-          trainArray = [];
-          for (int i = 0; i < (snapshot.value['treino']).length; i++) {
-            if (snapshot.value['treino'][i] != null) {
-              print(trainArray.length);
-              trainArray.add(snapshot.value['treino'][i]);
-            }
-          }        });
-      });
     });
 
     setState(() {
+      timePassed = widget.trainArray[actualStep]['time'];
       percentage = 0.0;
     });
 
@@ -188,7 +203,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
                 borderRadius: new BorderRadius.circular(64.0),
               ),
               child: Icon(
-                  timePassed == 0 && actualStep == trainArray.length - 1
+                  timePassed == 0 && actualStep == widget.trainArray.length - 1
                       ? Icons.beenhere
                       : trainStarted ? Icons.pause : Icons.directions_run,
                   size: 32.0,
@@ -205,10 +220,10 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   }
 
   String _getRemainTime() {
-    if (timePassed == 0 && actualStep == trainArray.length - 1) {
+    if (timePassed == 0 && actualStep == widget.trainArray.length - 1) {
       return 'Parabéns!!';
     }
-    if (trainArray != null && trainArray.length > 0) {
+    if (widget.trainArray != null && widget.trainArray.length > 0) {
       var minutes = ((timePassed / 60)).floor();
       var seconds = (timePassed % 60);
       return formatter.format(minutes) + ':' + formatter.format(seconds);
@@ -219,7 +234,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   Widget _getLabel() {
     if (trainStarted) {
       if (timePassed <= 15) {
-        if (actualStep == trainArray.length - 1) {
+        if (actualStep == widget.trainArray.length - 1) {
           if (timePassed == 0) {
             return new Text(
               'Ótimo treino',
@@ -241,22 +256,24 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         style: TextStyle(fontSize: 24.0),
       );
     }
-    if (!trainStarted &&
-        (actualStep != 0 || timePassed != trainArray[actualStep]['time'])) {
-      return new Text(
-        'Vamos lá, continue...',
-        style: TextStyle(fontSize: 24.0),
-      );
+
+    if (!trainStarted) {
+      if (actualStep == 0 && widget.trainArray[actualStep]['time'] == timePassed) {
+        return new Text(
+          'Vamos começar...',
+          style: TextStyle(fontSize: 24.0),
+        );
+      }
     }
     return new Text(
-      'Vamos começar...',
+      'Vamos lá, continue...',
       style: TextStyle(fontSize: 24.0),
     );
   }
 
   void _onPlayButton() {
     setState(() {
-      if (timePassed == 0 && actualStep == trainArray.length - 1) {
+      if (timePassed == 0 && actualStep == widget.trainArray.length - 1) {
         Navigator
             .of(context)
             .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
@@ -273,20 +290,20 @@ class _TrainPageFrameState extends State<TrainPageFrame>
             setState(() {
               percentage = newPercentage;
               timePassed = d.inSeconds;
-              newPercentage = (trainArray[actualStep]['time'] - timePassed) *
+              newPercentage = (widget.trainArray[actualStep]['time'] - timePassed) *
                   100 /
-                  trainArray[actualStep]['time'];
+                  widget.trainArray[actualStep]['time'];
               percentageAnimationController.forward(from: 0.0);
             });
           }
         });
         sub.onDone(() {
-          if (actualStep == trainArray.length - 1) {
+          if (actualStep == widget.trainArray.length - 1) {
             _trainRef.child('status').set('finished');
           } else {
             actualStep++;
             setState(() {
-              timePassed = trainArray[actualStep]['time'];
+              timePassed = widget.trainArray[actualStep]['time'];
               registerNewCountdown();
             });
           }
@@ -300,14 +317,14 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   }
 
   List<Widget> _getSpeedlabel() {
-    if (timePassed <= 15 && actualStep != trainArray.length - 1) {
+    if (timePassed <= 15 && actualStep != widget.trainArray.length - 1 && trainStarted) {
       return [
         new Text(
           'Próxima velocidade...',
           style: new TextStyle(fontSize: 16.0),
         ),
         new Text(
-          '${trainArray[actualStep + 1]['speed']}',
+          '${widget.trainArray[actualStep + 1]['speed']}',
           style: new TextStyle(fontSize: 96.0),
         ),
         new Text(
@@ -319,7 +336,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
 
     return [
       new Text(
-        '${trainArray[actualStep]['speed']}',
+        '${widget.trainArray[actualStep]['speed']}',
         style: new TextStyle(fontSize: 96.0),
       ),
       new Text(
@@ -337,20 +354,20 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         setState(() {
           percentage = newPercentage;
           timePassed = d.inSeconds;
-          newPercentage = (trainArray[actualStep]['time'] - timePassed) *
+          newPercentage = (widget.trainArray[actualStep]['time'] - timePassed) *
               100 /
-              trainArray[actualStep]['time'];
+              widget.trainArray[actualStep]['time'];
           percentageAnimationController.forward(from: 0.0);
         });
       }
     });
     sub.onDone(() {
-      if (actualStep == trainArray.length - 1) {
+      if (actualStep == widget.trainArray.length - 1) {
         _trainRef.child('status').set('finished');
       } else {
         actualStep++;
         setState(() {
-          timePassed = trainArray[actualStep]['time'];
+          timePassed = widget.trainArray[actualStep]['time'];
           registerNewCountdown();
         });
       }

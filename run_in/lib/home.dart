@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,8 @@ import 'package:run_in/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:run_in/tools/trainBuilder.dart';
+import 'package:run_in/train.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -194,18 +197,18 @@ class _HomePageFrameState extends State<HomePageFrame> {
 
   @override
   void initState() {
+    super.initState();
     widget.getUser().then((response) {
       widget.configureFirebaseApp().then((response) {
         DatabaseReference _evaluationRef = FirebaseDatabase.instance
             .reference()
             .child('trains')
             .child(widget.user.uid)
-            .child('evaluation')
             .child('status');
 
         _evaluationRef.once().then((DataSnapshot snapshot) {
           evaluationStatus = snapshot.value;
-          if (evaluationStatus != 'finished') {
+          if (evaluationStatus != 'progress') {
             _goTutorialPage();
           }
         });
@@ -214,28 +217,61 @@ class _HomePageFrameState extends State<HomePageFrame> {
 
         final f = new DateFormat('yyyy-MM-dd');
 
-        _trainRef = FirebaseDatabase.instance
+        _trainRef = database
             .reference()
             .child('trains')
             .child(widget.user.uid)
-            .child(f.format(new DateTime.now()));
+            .child('treinos');
+
+        _trainRef.keepSynced(true);
+        _trainRef
+            .orderByChild('finished')
+            .equalTo(f.format(new DateTime.now()))
+            .onValue
+            .listen((Event event) {
+          if (event.snapshot.value != null) {
+            setState(() {
+              trainStatus = 'finished';
+
+              for (var key in event.snapshot.value.keys) {
+                for (int i = 0; i < event.snapshot.value[key].length - 1; i++) {
+                  trainArray.add(event.snapshot.value[key][i.toString()]);
+                }
+              }
+            });
+          } else {
+            _trainRef
+                .orderByChild('finished')
+                .equalTo(null)
+                .limitToFirst(1)
+                .onValue
+                .listen((Event event) {
+              setState(() {
+                for (var key in event.snapshot.value.keys) {
+                  for (var train in event.snapshot.value[key]) {
+                    trainArray.add(train);
+                  }
+                }
+              });
+            });
+          }
+        });
 
 //        _trainRef.once().then((DataSnapshot snapshot) {
 //          print('LOGANDO: Connected to second database and read ${snapshot
 //              .value}');
-        _trainRef.keepSynced(true);
-        _trainRef.onValue.listen((Event event) {
-          setState(() {
-            trainArray = [];
-            trainStatus = event.snapshot.value['status'];
-            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
-              if (event.snapshot.value['treino'][i] != null) {
-                print(trainArray.length);
-                trainArray.add(event.snapshot.value['treino'][i]);
-              }
-            }
-          });
-        });
+//        _trainRef.onValue.listen((Event event) {
+//          setState(() {
+//            trainArray = [];
+//            trainStatus = event.snapshot.value['status'];
+//            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
+//              if (event.snapshot.value['treino'][i] != null) {
+//                print(trainArray.length);
+//                trainArray.add(event.snapshot.value['treino'][i]);
+//              }
+//            }
+//          });
+//        });
       });
     });
   }
@@ -266,7 +302,10 @@ class _HomePageFrameState extends State<HomePageFrame> {
 
   void _goTrainPage() {
     if (trainArray.length != 0) {
-      Navigator.of(context).pushNamed('/train');
+//      Navigator.of(context).pushNamed('/train');
+      Navigator.of(context).push(new PageRouteBuilder(
+            pageBuilder: (_, __, ___) => new TrainPage(trainArray),
+          ));
     }
     return null;
   }

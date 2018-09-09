@@ -11,6 +11,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:run_in/tools/circlePainter.dart';
 import 'package:countdown/countdown.dart';
 import 'package:run_in/tools/myDivider.dart';
+import 'package:run_in/tools/trainBuilder.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -78,6 +79,7 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   CountDown countDown;
   var sub;
   final formatter = new NumberFormat("##00");
+  int daysPerWeek;
 
   @override
   void initState() {
@@ -94,6 +96,18 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       });
   }
 
+  getDaysPerWeek() async {
+    widget.user = await _auth.currentUser();
+    FirebaseDatabase.instance
+        .reference()
+        .child('train')
+        .child(widget.user.uid)
+        .child('days_per_week')
+        .once()
+        .then((DataSnapshot snapshot) {
+      daysPerWeek = snapshot.value;
+    });
+  }
 
   @override
   void dispose() {
@@ -152,8 +166,7 @@ class _FourthPageFrameState extends State<FourthPageFrame>
 //                        }),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children:
-                        _getSpeedlabel(),
+                      children: _getSpeedlabel(),
                     ),
                   ),
                 ),
@@ -176,16 +189,15 @@ class _FourthPageFrameState extends State<FourthPageFrame>
 
     var label = new Center(
         child: new Column(
-          children: <Widget>[
-            myDivider(),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: _getLabel(),
-            ),
-            myDivider()
-          ],
-        )
-    );
+      children: <Widget>[
+        myDivider(),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+          child: _getLabel(),
+        ),
+        myDivider()
+      ],
+    ));
 
     var playButton = new Padding(
       padding: EdgeInsets.all(0.0),
@@ -218,29 +230,35 @@ class _FourthPageFrameState extends State<FourthPageFrame>
                 ),
               ),
             ),
-            !trainStarted ? Padding(
-              padding: const EdgeInsets.only(left: 32.0, right: 32.0),
-              child: Container(
-                height: 96.0,
-                width: 96.0,
-                child: BackdropFilter(
-                  filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: new FlatButton(
-                    color: Colors.transparent,
-                    onPressed: _onStopButton,
-                    shape: new RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(64.0),
+            !trainStarted
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 32.0, right: 32.0),
+                    child: Container(
+                      height: 96.0,
+                      width: 96.0,
+                      child: BackdropFilter(
+                        filter:
+                            new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                        child: new FlatButton(
+                          color: Colors.transparent,
+                          onPressed: _onStopButton,
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(64.0),
+                          ),
+                          child: Icon(
+                              timePassed == 0 &&
+                                      actualStep == trainArray.length - 1
+                                  ? Icons.beenhere
+                                  : trainStarted ? Icons.pause : Icons.stop,
+                              size: 32.0,
+                              color: Colors.white),
+                        ),
+                      ),
                     ),
-                    child: Icon(
-                        timePassed == 0 && actualStep == trainArray.length - 1
-                            ? Icons.beenhere
-                            : trainStarted ? Icons.pause : Icons.stop,
-                        size: 32.0,
-                        color: Colors.white),
+                  )
+                : Container(
+                    width: 0.0,
                   ),
-                ),
-              ),
-            ) : Container(width: 0.0,),
           ],
         ),
       ),
@@ -346,19 +364,19 @@ class _FourthPageFrameState extends State<FourthPageFrame>
     });
   }
 
-
-  List<Widget>
-  _getSpeedlabel() {
+  List<Widget> _getSpeedlabel() {
     if (timePassed <= 15 && actualStep != trainArray.length - 1) {
       return [
-        new Text('Próxima velocidade...',
+        new Text(
+          'Próxima velocidade...',
           style: new TextStyle(fontSize: 16.0),
         ),
         new Text(
           '${trainArray[actualStep + 1]['speed']}',
           style: new TextStyle(fontSize: 96.0),
         ),
-        new Text('Km/h',
+        new Text(
+          'Km/h',
           style: new TextStyle(fontSize: 16.0),
         )
       ];
@@ -369,7 +387,8 @@ class _FourthPageFrameState extends State<FourthPageFrame>
         '${trainArray[actualStep]['speed']}',
         style: new TextStyle(fontSize: 96.0),
       ),
-      new Text('Km/h',
+      new Text(
+        'Km/h',
         style: new TextStyle(fontSize: 16.0),
       )
     ];
@@ -411,15 +430,33 @@ class _FourthPageFrameState extends State<FourthPageFrame>
 
   Future saveUserEvaluation() async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    FirebaseDatabase.instance.reference().child('trains')
-        .child(user.uid)
-        .child('evaluation')
-        .child('status').set('finished');
+    DatabaseReference reference = FirebaseDatabase.instance
+        .reference()
+        .child('trains')
+        .child(user.uid);
 
-    FirebaseDatabase.instance.reference().child('trains')
+    reference.child('status').set('progress');
+    reference.child('start_date').set(new DateTime.now());
+    reference.child('evaluation_speed').set(trainArray[actualStep]['speed']);
+
+
+    TrainBuilder builder = new TrainBuilder(daysPerWeek, trainArray[actualStep]['speed']);
+    builder.build();
+    Map trains = builder.getTrain();
+
+    FirebaseDatabase.instance
+        .reference()
+        .child('trains')
         .child(user.uid)
-        .child('evaluation')
-        .child('value').set(trainArray[actualStep]['speed']);
+        .child('treinos')
+        .set(trains);
+
+//    for (var train in  trains) {
+//      for (var trainDeep in train) {
+//        print(trainDeep.time);
+//        print(trainDeep.speed);
+//      }
+//    }
   }
 
   nextPage() {

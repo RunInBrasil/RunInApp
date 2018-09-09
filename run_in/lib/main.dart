@@ -13,7 +13,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final routes = <String, WidgetBuilder> {
   '/home': (BuildContext context) => new HomePage(),
   '/login': (BuildContext context) => new LoginPage(),
-  '/train': (BuildContext context) => new TrainPage(),
+//  '/train': (BuildContext context) => new TrainPage(),
   '/tutorial': (BuildContext context) => new Tutorial()
 };
 
