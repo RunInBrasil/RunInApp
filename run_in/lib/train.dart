@@ -15,10 +15,10 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class TrainPage extends StatelessWidget {
   BuildContext baseContext;
-  var trainArray = [];
+  var trainArray;
 
-  TrainPage(List trainArray) {
-    this.trainArray = trainArray;
+  TrainPage(var trainInfo) {
+    this.trainArray = trainInfo;
   }
 
   @override
@@ -35,9 +35,11 @@ class TrainPageFrame extends StatefulWidget {
   FirebaseApp app;
   FirebaseUser user;
   var trainArray = [];
+  String dayIndex;
 
-  TrainPageFrame(List trainArray) {
-    this.trainArray = trainArray;
+  TrainPageFrame(var trainArray) {
+    this.trainArray = trainArray['trains'];
+    this.dayIndex = trainArray['day'];
   }
 
   @override
@@ -85,10 +87,12 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     widget.getUser().then((response) async {
 //      final f = new DateFormat('yyyy-MM-dd');
 
-//      _trainRef = FirebaseDatabase.instance
-//          .reference()
-//          .child('trains')
-//          .child(widget.user.uid)
+      _trainRef = FirebaseDatabase.instance
+          .reference()
+          .child('trains')
+          .child(widget.user.uid)
+          .child('treinos');
+
 //          .child(f.format(new DateTime.now()));
 //
 //      await _trainRef.once().then((DataSnapshot snapshot) {
@@ -105,7 +109,6 @@ class _TrainPageFrameState extends State<TrainPageFrame>
 //          }
 //        });
 //      });
-
     });
 
     setState(() {
@@ -258,7 +261,8 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     }
 
     if (!trainStarted) {
-      if (actualStep == 0 && widget.trainArray[actualStep]['time'] == timePassed) {
+      if (actualStep == 0 &&
+          widget.trainArray[actualStep]['time'] == timePassed) {
         return new Text(
           'Vamos começar...',
           style: TextStyle(fontSize: 24.0),
@@ -290,16 +294,17 @@ class _TrainPageFrameState extends State<TrainPageFrame>
             setState(() {
               percentage = newPercentage;
               timePassed = d.inSeconds;
-              newPercentage = (widget.trainArray[actualStep]['time'] - timePassed) *
-                  100 /
-                  widget.trainArray[actualStep]['time'];
+              newPercentage =
+                  (widget.trainArray[actualStep]['time'] - timePassed) *
+                      100 /
+                      widget.trainArray[actualStep]['time'];
               percentageAnimationController.forward(from: 0.0);
             });
           }
         });
         sub.onDone(() {
           if (actualStep == widget.trainArray.length - 1) {
-            _trainRef.child('status').set('finished');
+            _registerTrainFinished();
           } else {
             actualStep++;
             setState(() {
@@ -317,7 +322,9 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   }
 
   List<Widget> _getSpeedlabel() {
-    if (timePassed <= 15 && actualStep != widget.trainArray.length - 1 && trainStarted) {
+    if (timePassed <= 15 &&
+        actualStep != widget.trainArray.length - 1 &&
+        trainStarted) {
       return [
         new Text(
           'Próxima velocidade...',
@@ -363,7 +370,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     });
     sub.onDone(() {
       if (actualStep == widget.trainArray.length - 1) {
-        _trainRef.child('status').set('finished');
+        _registerTrainFinished();
       } else {
         actualStep++;
         setState(() {
@@ -372,5 +379,10 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         });
       }
     });
+  }
+
+  void _registerTrainFinished() {
+    final f = new DateFormat('yyyy-MM-dd');
+    _trainRef.child(widget.dayIndex).child('finished').set(f.format(new DateTime.now()));
   }
 }

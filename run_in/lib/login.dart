@@ -18,7 +18,8 @@ final String userAlreadyExist =
 final incorrectPasswordSnackBar = SnackBar(content: Text('Senha Incorreta'));
 final userAlreadExistSnackbar =
     SnackBar(content: Text('Este usuário já esta cadastrado'));
-final errorOnRetrieveEvaluation = SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
+final errorOnRetrieveEvaluation =
+    SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
 
 class LoginPage extends StatelessWidget {
   @override
@@ -43,11 +44,12 @@ class LoginPageFrame extends StatefulWidget {
 
   Future configureFirebaseApp() async {
     app = await FirebaseApp.configure(
-      name: 'db2',
       options: Platform.isIOS
           ? const FirebaseOptions(
-              googleAppID: '1:808188414561:ios:7e6d93c2f42792e9',
+              googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
               gcmSenderID: '808188414561',
+              apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
+              projectID: 'runin-d30a7',
               databaseURL: 'https://runin-d30a7.firebaseio.com',
             )
           : const FirebaseOptions(
@@ -265,7 +267,7 @@ class _LoginPageState extends State<LoginPageFrame> {
     _signInWithGoogle().then((response) {
       _getEvaluationStatus().then((response) {
         Navigator.pop(context);
-        if (response == 'finished') {
+        if (response == 'progress') {
           _navigateToMainPage(context);
         } else {
           _navigateToTutorialPage(context);
@@ -287,10 +289,10 @@ class _LoginPageState extends State<LoginPageFrame> {
       // called again, and so nothing would appear to happen.
     });
     _showDialog();
-    _signInWithEmail().then((response) {
-      _getEvaluationStatus().then((response) {
+    _signInWithEmail().then((responseA) {
+      _getEvaluationStatus().then((responseB) {
         Navigator.pop(context);
-        if (response == 'finished') {
+        if (responseB == 'progress') {
           _navigateToMainPage(context);
         } else {
           _navigateToTutorialPage(context);
@@ -313,7 +315,7 @@ class _LoginPageState extends State<LoginPageFrame> {
     _registerWithEmail().then((response) {
       _getEvaluationStatus().then((response) {
         Navigator.pop(context);
-        if (response == 'finished') {
+        if (response == 'progress') {
           _navigateToMainPage(context);
         } else {
           _navigateToTutorialPage(context);
@@ -367,8 +369,8 @@ class _LoginPageState extends State<LoginPageFrame> {
 
   Future<String> _registerWithEmail() async {
     print('Inicio refgistro');
-    print('LOG: ${ emailController.text}');
-    print('LOG: ${ passwordController.text}');
+    print('LOG: ${emailController.text}');
+    print('LOG: ${passwordController.text}');
 
     final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
@@ -388,14 +390,12 @@ class _LoginPageState extends State<LoginPageFrame> {
   }
 
   void _navigateToMainPage(BuildContext context) {
-    Navigator
-        .of(context)
+    Navigator.of(context)
         .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
   }
 
   void _navigateToTutorialPage(BuildContext context) {
-    Navigator
-        .of(context)
+    Navigator.of(context)
         .pushNamedAndRemoveUntil('/tutorial', (Route<dynamic> route) => false);
   }
 
@@ -416,11 +416,10 @@ class _LoginPageState extends State<LoginPageFrame> {
         .reference()
         .child('trains')
         .child(user.uid)
-        .child('evaluation')
         .child('status');
 
-    _evaluationRef.once().then((DataSnapshot snapshot) {
-      return snapshot.value;
-    });
+
+    DataSnapshot snapshot = await _evaluationRef.once();
+    return snapshot.value;
   }
 }

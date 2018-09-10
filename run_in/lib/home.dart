@@ -83,11 +83,13 @@ class HomePageFrame extends StatefulWidget {
 
   Future configureFirebaseApp() async {
     app = await FirebaseApp.configure(
-      name: 'db2',
+      name: 'RunIn',
       options: Platform.isIOS
           ? const FirebaseOptions(
-              googleAppID: '1:808188414561:ios:7e6d93c2f42792e9',
+              googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
               gcmSenderID: '808188414561',
+              apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
+              projectID: 'runin-d30a7',
               databaseURL: 'https://runin-d30a7.firebaseio.com',
             )
           : const FirebaseOptions(
@@ -107,6 +109,8 @@ class _HomePageFrameState extends State<HomePageFrame> {
   var trainArray = [];
   DatabaseReference _trainRef;
   String evaluationStatus;
+  String dayIndex;
+  String today;
 
   var trainStatus = '';
 
@@ -181,7 +185,10 @@ class _HomePageFrameState extends State<HomePageFrame> {
                   child: new Text('Cancelar')),
               new FlatButton(
                   onPressed: () {
-                    _trainRef.child('status').set('finished');
+                    _trainRef.child(dayIndex).child('finished').set(today);
+                    setState(() {
+                      trainStatus = 'finished';
+                    });
                     Navigator.of(context).pop();
                   },
                   child: new Text('Concluir'))
@@ -216,6 +223,7 @@ class _HomePageFrameState extends State<HomePageFrame> {
         final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
 
         final f = new DateFormat('yyyy-MM-dd');
+        today = f.format(new DateTime.now());
 
         _trainRef = database
             .reference()
@@ -223,19 +231,20 @@ class _HomePageFrameState extends State<HomePageFrame> {
             .child(widget.user.uid)
             .child('treinos');
 
-        _trainRef.keepSynced(true);
         _trainRef
             .orderByChild('finished')
             .equalTo(f.format(new DateTime.now()))
-            .onValue
-            .listen((Event event) {
-          if (event.snapshot.value != null) {
+//            .onValue
+//            .listen((Event event) {
+            .once().then((DataSnapshot snapshot) {
+          if (snapshot.value != null) {
             setState(() {
               trainStatus = 'finished';
-
-              for (var key in event.snapshot.value.keys) {
-                for (int i = 0; i < event.snapshot.value[key].length - 1; i++) {
-                  trainArray.add(event.snapshot.value[key][i.toString()]);
+              trainArray = new List();
+              for (var key in snapshot.value.keys) {
+                dayIndex = key;
+                for (int i = 0; i < snapshot.value[key].length - 1; i++) {
+                  trainArray.add(snapshot.value[key][i.toString()]);
                 }
               }
             });
@@ -244,12 +253,45 @@ class _HomePageFrameState extends State<HomePageFrame> {
                 .orderByChild('finished')
                 .equalTo(null)
                 .limitToFirst(1)
-                .onValue
-                .listen((Event event) {
+//                .onValue
+//                .listen((Event event) {
+//              setState(() {
+//                trainArray = new List();
+//                if (event.snapshot.value.keys != null) {
+//                  for (var key in event.snapshot.value.keys) {
+//                    dayIndex = key;
+//                    for (var train in event.snapshot.value[key]) {
+//                      trainArray.add(train);
+//                    }
+//                  }
+//                } else {
+//                  print(event.snapshot.key);
+//                  for (var key in event.snapshot.value) {
+//                    dayIndex = '0';
+//                    for (var train in key) {
+//                      trainArray.add(train);
+//                    }
+//                  }
+//                }
+//              });
+//            });
+                .once().then((DataSnapshot snapshot) {
               setState(() {
-                for (var key in event.snapshot.value.keys) {
-                  for (var train in event.snapshot.value[key]) {
-                    trainArray.add(train);
+                trainArray = new List();
+                if (snapshot.value.keys != null) {
+                  for (var key in snapshot.value.keys) {
+                    dayIndex = key;
+                    for (var train in snapshot.value[key]) {
+                      trainArray.add(train);
+                    }
+                  }
+                } else {
+                  print(snapshot.key);
+                  for (var key in snapshot.value) {
+                    dayIndex = '0';
+                    for (var train in key) {
+                      trainArray.add(train);
+                    }
                   }
                 }
               });
@@ -304,7 +346,7 @@ class _HomePageFrameState extends State<HomePageFrame> {
     if (trainArray.length != 0) {
 //      Navigator.of(context).pushNamed('/train');
       Navigator.of(context).push(new PageRouteBuilder(
-            pageBuilder: (_, __, ___) => new TrainPage(trainArray),
+            pageBuilder: (_, __, ___) => new TrainPage({'trains': trainArray, 'day': dayIndex}),
           ));
     }
     return null;

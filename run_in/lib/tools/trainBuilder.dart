@@ -256,14 +256,14 @@ class TrainBuilder {
   }
 
   void _generateTrain() {
-    List plan = daysPerWeek == 2 ? fiveDaysWeek :
+    List plan = daysPerWeek == 2 ? twoDaysWeek :
         daysPerWeek == 3 ? threeDaysWeek :
         daysPerWeek == 4 ? fourDaysWeek :
         fiveDaysWeek;
 
 //    train = new List(plan.length);
     train = Map();
-    int dayCounter = 0;
+    int dayCounter = 2;
     int timeCounter;
     for (var day in plan) {
       timeCounter = 0;

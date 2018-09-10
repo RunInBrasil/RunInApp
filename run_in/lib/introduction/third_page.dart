@@ -80,7 +80,7 @@ class ThirdPage extends StatelessWidget {
 
   void _saveDaysPerWeek(int numOfDays) async {
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    FirebaseDatabase.instance.reference().child('train')
+    FirebaseDatabase.instance.reference().child('trains')
     .child(user.uid)
     .child('days_per_week')
     .set(numOfDays);

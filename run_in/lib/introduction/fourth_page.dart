@@ -86,6 +86,8 @@ class _FourthPageFrameState extends State<FourthPageFrame>
     trainArray = _buildPerfomanceTest();
     timePassed = trainArray[actualStep]['time'];
 
+    getDaysPerWeek();
+
     percentageAnimationController = new AnimationController(
         vsync: this, duration: new Duration(milliseconds: 10000))
       ..addListener(() {
@@ -97,15 +99,17 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   }
 
   getDaysPerWeek() async {
-    widget.user = await _auth.currentUser();
+    FirebaseUser user = await _auth.currentUser();
     FirebaseDatabase.instance
         .reference()
-        .child('train')
-        .child(widget.user.uid)
+        .child('trains')
+        .child(user.uid)
         .child('days_per_week')
         .once()
         .then((DataSnapshot snapshot) {
-      daysPerWeek = snapshot.value;
+          setState(() {
+            daysPerWeek = snapshot.value;
+          });
     });
   }
 
@@ -439,6 +443,9 @@ class _FourthPageFrameState extends State<FourthPageFrame>
     reference.child('start_date').set(new DateTime.now());
     reference.child('evaluation_speed').set(trainArray[actualStep]['speed']);
 
+    if (daysPerWeek == null) {
+      await getDaysPerWeek();
+    }
 
     TrainBuilder builder = new TrainBuilder(daysPerWeek, trainArray[actualStep]['speed']);
     builder.build();
