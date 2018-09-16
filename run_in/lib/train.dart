@@ -12,6 +12,7 @@ import 'package:run_in/tools/circlePainter.dart';
 import 'package:countdown/countdown.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+final backgroundColor = Color(0xCC000000);
 
 class TrainPage extends StatelessWidget {
   BuildContext baseContext;
@@ -27,7 +28,16 @@ class TrainPage extends StatelessWidget {
       Navigator.of(baseContext).pushNamed('/home');
     }
     baseContext = context;
-    return new Scaffold(body: new TrainPageFrame(trainArray));
+    return new Scaffold(
+        body: Container(
+            decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new AssetImage("assets/images/running-treadmill.jpg"),
+                    fit: BoxFit.cover)
+            ),
+            child: new TrainPageFrame(trainArray)
+        )
+    );
   }
 }
 
@@ -136,20 +146,20 @@ class _TrainPageFrameState extends State<TrainPageFrame>
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: BackdropFilter(
-              filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
               child: new Container(
                 width: 300.0,
                 height: 300.0,
                 decoration: new BoxDecoration(
                   borderRadius: new BorderRadius.circular(150.0),
-                  color: Colors.transparent,
+                  color: backgroundColor,
                 ),
                 child: new CustomPaint(
                   foregroundPainter: new MyPainter(
                       lineColor: Colors.transparent,
                       completeColor: Colors.white,
                       completePercent: percentage,
-                      width: 3.0),
+                      width: 4.0),
                   child: new Center(
 //                    child: RaisedButton(
 //                        color: Colors.transparent,
@@ -198,9 +208,9 @@ class _TrainPageFrameState extends State<TrainPageFrame>
           height: 96.0,
           width: 96.0,
           child: BackdropFilter(
-            filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
             child: new FlatButton(
-              color: Colors.transparent,
+              color: backgroundColor,
               onPressed: _onPlayButton,
               shape: new RoundedRectangleBorder(
                 borderRadius: new BorderRadius.circular(64.0),
@@ -342,6 +352,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     }
 
     return [
+      Spacer(),
       new Text(
         '${widget.trainArray[actualStep]['speed']}',
         style: new TextStyle(fontSize: 96.0),
@@ -349,7 +360,8 @@ class _TrainPageFrameState extends State<TrainPageFrame>
       new Text(
         'Km/h',
         style: new TextStyle(fontSize: 16.0),
-      )
+      ),
+      Spacer(),
     ];
   }
 

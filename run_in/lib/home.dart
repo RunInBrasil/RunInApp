@@ -43,7 +43,18 @@ class HomePage extends StatelessWidget {
             )
           ],
         ),
-        body: new HomePageFrame());
+        body: Container(
+            constraints: new BoxConstraints.expand(),
+            decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new AssetImage("assets/images/prepare-to-run.jpg"),
+                    fit: BoxFit.cover)),
+            child: Column(
+              children: <Widget>[
+                new HomePageFrame(),
+                Spacer(),
+              ],
+            )));
   }
 
   void _handleMenuAction(String value) {
@@ -56,8 +67,7 @@ class HomePage extends StatelessWidget {
 
   void _logOut() async {
     await _auth.signOut().then((onValue) async {
-      Navigator
-          .of(baseContext)
+      Navigator.of(baseContext)
           .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
     });
   }
@@ -66,8 +76,7 @@ class HomePage extends StatelessWidget {
     if (await _auth.currentUser() != null) {
       return;
     }
-    Navigator
-        .of(context)
+    Navigator.of(context)
         .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
   }
 }
@@ -119,6 +128,7 @@ class _HomePageFrameState extends State<HomePageFrame> {
     var todayTrain = Padding(
       padding: const EdgeInsets.all(8.0),
       child: new Card(
+        color: Color(0xAA000000),
           child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -163,7 +173,7 @@ class _HomePageFrameState extends State<HomePageFrame> {
                 )
               ],
             ),
-          )
+          ),
         ],
       )),
     );
@@ -236,7 +246,8 @@ class _HomePageFrameState extends State<HomePageFrame> {
             .equalTo(f.format(new DateTime.now()))
 //            .onValue
 //            .listen((Event event) {
-            .once().then((DataSnapshot snapshot) {
+            .once()
+            .then((DataSnapshot snapshot) {
           if (snapshot.value != null) {
             setState(() {
               trainStatus = 'finished';
@@ -275,7 +286,8 @@ class _HomePageFrameState extends State<HomePageFrame> {
 //                }
 //              });
 //            });
-                .once().then((DataSnapshot snapshot) {
+                .once()
+                .then((DataSnapshot snapshot) {
               setState(() {
                 trainArray = new List();
                 if (snapshot.value.keys != null) {
@@ -330,8 +342,8 @@ class _HomePageFrameState extends State<HomePageFrame> {
       height: trainArray.length * 20.0,
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
-          return Text('${trainArray[index]['time'] /
-              60}  minutos na velocidade  ${trainArray[index]['speed']}');
+          return Text(
+              '${trainArray[index]['time'] / 60}  minutos na velocidade  ${trainArray[index]['speed']}');
         },
         itemCount: trainArray.length,
       ),
@@ -346,8 +358,9 @@ class _HomePageFrameState extends State<HomePageFrame> {
     if (trainArray.length != 0) {
 //      Navigator.of(context).pushNamed('/train');
       Navigator.of(context).push(new PageRouteBuilder(
-            pageBuilder: (_, __, ___) => new TrainPage({'trains': trainArray, 'day': dayIndex}),
-          ));
+        pageBuilder: (_, __, ___) =>
+            new TrainPage({'trains': trainArray, 'day': dayIndex}),
+      ));
     }
     return null;
   }

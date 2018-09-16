@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,6 +22,8 @@ final userAlreadExistSnackbar =
 final errorOnRetrieveEvaluation =
     SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
 
+final buttonColor = Color(0x99000000);
+
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,11 @@ class LoginPage extends StatelessWidget {
 //        appBar: new AppBar(
 //          title: Text('RunIn'),
 //        ),
-        body: new LoginPageFrame());
+        body: Container(
+            decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new AssetImage("assets/images/lacing-shoes.jpg"), fit: BoxFit.cover)),
+            child: new LoginPageFrame()));
   }
 }
 
@@ -134,29 +141,37 @@ class _LoginPageState extends State<LoginPageFrame> {
                     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                     child: Container(
                       width: 128.0,
-                      child: new OutlineButton(
-                        shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(32.0),
+//                      child: BackdropFilter(
+//                        filter: new ImageFilter.blur(
+//                          sigmaX: 10.0,
+//                          sigmaY: 10.0,
+//                        ),
+                        child: new RaisedButton(
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(32.0),
+                          ),
+                          color: buttonColor,
+                          onPressed: () {
+                            setState(() {
+                              toRegister = true;
+                            });
+                          },
+                          child: Text(
+                            'Cadastrar',
+                          ),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            toRegister = true;
-                          });
-                        },
-                        child: Text(
-                          'Cadastrar',
-                        ),
-                      ),
+//                      ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                     child: Container(
                       width: 128.0,
-                      child: new OutlineButton(
+                      child: new RaisedButton(
                         shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(32.0),
                         ),
+                        color: buttonColor,
                         onPressed: _signInEmail,
                         child: Text(
                           'Entrar',
@@ -168,7 +183,7 @@ class _LoginPageState extends State<LoginPageFrame> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: new OutlineButton(
+                child: new RaisedButton(
                   shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(32.0),
                   ),
@@ -182,6 +197,7 @@ class _LoginPageState extends State<LoginPageFrame> {
 
                     title: const Text('Entrar com Google'),
                   ),
+                  color: buttonColor,
                 ),
               ),
             ],
@@ -191,33 +207,69 @@ class _LoginPageState extends State<LoginPageFrame> {
     } else {
       return new Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 21.0),
+          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 21.0, bottom: 32.0),
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              new TextFormField(
-                controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-              ),
-              new TextFormField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(labelText: 'Senha'),
+              Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Container(
+                  decoration: new BoxDecoration(
+                      borderRadius:
+                      new BorderRadius.all(new Radius.circular(32.0)),
+                      color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: new TextFormField(
+                      style: new TextStyle(color: Colors.black),
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: 'Email',
+                        labelStyle: new TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
               ),
               Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: new OutlineButton(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Container(
+                  decoration: new BoxDecoration(
+                      borderRadius:
+                      new BorderRadius.all(new Radius.circular(32.0)),
+                      color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: new TextFormField(
+                      style: new TextStyle(color: Colors.black),
+                      obscureText: true,
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: 'Senha',
+                        labelStyle: new TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(32.0, 8.0, 32.0, 8.0),
+                child: new RaisedButton(
                   shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(32.0),
                   ),
                   onPressed: _registerEmail,
                   child: Text('Cadastrar'),
+                  color: buttonColor,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: new OutlineButton(
+                child: new RaisedButton(
                   shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(32.0),
                   ),
@@ -233,11 +285,12 @@ class _LoginPageState extends State<LoginPageFrame> {
                     ),
                     title: const Text('Entrar com email'),
                   ),
+                  color: buttonColor,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: new OutlineButton(
+                child: new RaisedButton(
                   shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(32.0),
                   ),
@@ -249,6 +302,7 @@ class _LoginPageState extends State<LoginPageFrame> {
                     ),
                     title: const Text('Entrar com Google'),
                   ),
+                  color: buttonColor,
                 ),
               ),
             ],
@@ -417,7 +471,6 @@ class _LoginPageState extends State<LoginPageFrame> {
         .child('trains')
         .child(user.uid)
         .child('status');
-
 
     DataSnapshot snapshot = await _evaluationRef.once();
     return snapshot.value;
