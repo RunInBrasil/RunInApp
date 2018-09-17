@@ -93,7 +93,7 @@ class HomePageFrame extends StatefulWidget {
 
   Future configureFirebaseApp() async {
     app = await FirebaseApp.configure(
-      name: 'RunIn',
+      name: 'run-in',
       options: Platform.isIOS
           ? const FirebaseOptions(
               googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',

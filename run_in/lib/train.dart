@@ -32,7 +32,8 @@ class TrainPage extends StatelessWidget {
         body: Container(
             decoration: new BoxDecoration(
                 image: new DecorationImage(
-                    image: new AssetImage("assets/images/running-treadmill.jpg"),
+                    image: new AssetImage(
+                        "assets/images/running-treadmill.jpg"),
                     fit: BoxFit.cover)
             ),
             child: new TrainPageFrame(trainArray)
@@ -139,7 +140,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   @override
   Widget build(BuildContext context) {
     var roundClock = Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 32.0, 0.0, 0.0),
+      padding: EdgeInsets.fromLTRB(0.0, Platform.isIOS ? 0.0 : 32.0, 0.0, 0.0),
       child: Center(
         child: PhysicalModel(
           color: Colors.transparent,
@@ -226,8 +227,24 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         ),
       ),
     );
+
+    var backButton = new Padding(padding: EdgeInsets.only(top: 42.0),
+      child: Container(
+        alignment: Alignment(-1.0, 3.0),
+        child: FlatButton(onPressed: () { Navigator.pop(context);}, child: Icon(
+            Icons.arrow_back_ios,
+            size: 32.0,
+            color: Colors.white)
+        ),
+      ),
+    );
+
+    var childs = [roundClock, timer, label, playButton];
+    if (Platform.isIOS) {
+      childs.insert(0, backButton);
+    }
     var screen = new Column(
-      children: <Widget>[roundClock, timer, label, playButton],
+      children: childs,
     );
     return screen;
   }
@@ -395,6 +412,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
 
   void _registerTrainFinished() {
     final f = new DateFormat('yyyy-MM-dd');
-    _trainRef.child(widget.dayIndex).child('finished').set(f.format(new DateTime.now()));
+    _trainRef.child(widget.dayIndex).child('finished').set(
+        f.format(new DateTime.now()));
   }
 }
