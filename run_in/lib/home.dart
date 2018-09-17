@@ -114,12 +114,14 @@ class HomePageFrame extends StatefulWidget {
   }
 }
 
-class _HomePageFrameState extends State<HomePageFrame> {
+class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserver {
   var trainArray = [];
   DatabaseReference _trainRef;
   String evaluationStatus;
   String dayIndex;
   String today;
+
+  bool loadingInfo = false;
 
   var trainStatus = '';
 
@@ -141,6 +143,16 @@ class _HomePageFrameState extends State<HomePageFrame> {
                   leading: const Icon(Icons.directions_run),
                   title: new Text(getTodayDate()),
                 ),
+              ),
+              loadingInfo ? Container(
+                width: 24.0,
+                height: 24.0,
+                child: new CircularProgressIndicator(
+                  strokeWidth: 2.0,
+                ),
+              ) : 
+              Padding(
+                padding: EdgeInsets.all(0.0),
               ),
               Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -213,122 +225,20 @@ class _HomePageFrameState extends State<HomePageFrame> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+    if (state == AppLifecycleState.resumed) {
+      fetchInfoFromFirebase();
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
-    widget.getUser().then((response) {
-      widget.configureFirebaseApp().then((response) {
-        DatabaseReference _evaluationRef = FirebaseDatabase.instance
-            .reference()
-            .child('trains')
-            .child(widget.user.uid)
-            .child('status');
-
-        _evaluationRef.once().then((DataSnapshot snapshot) {
-          evaluationStatus = snapshot.value;
-          if (evaluationStatus != 'progress') {
-            _goTutorialPage();
-          }
-        });
-
-        final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
-
-        final f = new DateFormat('yyyy-MM-dd');
-        today = f.format(new DateTime.now());
-
-        _trainRef = database
-            .reference()
-            .child('trains')
-            .child(widget.user.uid)
-            .child('treinos');
-
-        _trainRef
-            .orderByChild('finished')
-            .equalTo(f.format(new DateTime.now()))
-//            .onValue
-//            .listen((Event event) {
-            .once()
-            .then((DataSnapshot snapshot) {
-          if (snapshot.value != null) {
-            setState(() {
-              trainStatus = 'finished';
-              trainArray = new List();
-              for (var key in snapshot.value.keys) {
-                dayIndex = key;
-                for (int i = 0; i < snapshot.value[key].length - 1; i++) {
-                  trainArray.add(snapshot.value[key][i.toString()]);
-                }
-              }
-            });
-          } else {
-            _trainRef
-                .orderByChild('finished')
-                .equalTo(null)
-                .limitToFirst(1)
-//                .onValue
-//                .listen((Event event) {
-//              setState(() {
-//                trainArray = new List();
-//                if (event.snapshot.value.keys != null) {
-//                  for (var key in event.snapshot.value.keys) {
-//                    dayIndex = key;
-//                    for (var train in event.snapshot.value[key]) {
-//                      trainArray.add(train);
-//                    }
-//                  }
-//                } else {
-//                  print(event.snapshot.key);
-//                  for (var key in event.snapshot.value) {
-//                    dayIndex = '0';
-//                    for (var train in key) {
-//                      trainArray.add(train);
-//                    }
-//                  }
-//                }
-//              });
-//            });
-                .once()
-                .then((DataSnapshot snapshot) {
-              setState(() {
-                trainArray = new List();
-                if (snapshot.value.keys != null) {
-                  for (var key in snapshot.value.keys) {
-                    dayIndex = key;
-                    for (var train in snapshot.value[key]) {
-                      trainArray.add(train);
-                    }
-                  }
-                } else {
-                  print(snapshot.key);
-                  for (var key in snapshot.value) {
-                    dayIndex = '0';
-                    for (var train in key) {
-                      trainArray.add(train);
-                    }
-                  }
-                }
-              });
-            });
-          }
-        });
-
-//        _trainRef.once().then((DataSnapshot snapshot) {
-//          print('LOGANDO: Connected to second database and read ${snapshot
-//              .value}');
-//        _trainRef.onValue.listen((Event event) {
-//          setState(() {
-//            trainArray = [];
-//            trainStatus = event.snapshot.value['status'];
-//            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
-//              if (event.snapshot.value['treino'][i] != null) {
-//                print(trainArray.length);
-//                trainArray.add(event.snapshot.value['treino'][i]);
-//              }
-//            }
-//          });
-//        });
-      });
-    });
+    WidgetsBinding.instance.addObserver(this);
+    fetchInfoFromFirebase();
   }
+
 
   Widget _buildTrainListView() {
     if (trainArray.length == 0) {
@@ -368,5 +278,126 @@ class _HomePageFrameState extends State<HomePageFrame> {
   void _goTutorialPage() {
     Navigator.of(context).pushNamed('/tutorial');
     return null;
+  }
+
+  void fetchInfoFromFirebase() {
+    setState(() {
+      loadingInfo = true;
+    });
+    widget.getUser().then((response) {
+      widget.configureFirebaseApp().then((response) {
+        DatabaseReference _evaluationRef = FirebaseDatabase.instance
+            .reference()
+            .child('trains')
+            .child(widget.user.uid)
+            .child('status');
+
+        _evaluationRef.once().then((DataSnapshot snapshot) {
+          evaluationStatus = snapshot.value;
+          if (evaluationStatus != 'progress') {
+            _goTutorialPage();
+          }
+        });
+
+        final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
+
+        final f = new DateFormat('yyyy-MM-dd');
+        today = f.format(new DateTime.now());
+
+        _trainRef = database
+            .reference()
+            .child('trains')
+            .child(widget.user.uid)
+            .child('treinos');
+
+        _trainRef
+            .orderByChild('finished')
+            .equalTo(f.format(new DateTime.now()))
+//            .onValue
+//            .listen((Event event) {
+            .once()
+            .then((DataSnapshot snapshot) {
+          if (snapshot.value != null) {
+            setState(() {
+              loadingInfo = false;
+              trainStatus = 'finished';
+              trainArray = new List();
+              for (var key in snapshot.value.keys) {
+                dayIndex = key;
+                for (int i = 0; i < snapshot.value[key].length - 1; i++) {
+                  trainArray.add(snapshot.value[key][i.toString()]);
+                }
+              }
+            });
+          } else {
+            _trainRef
+                .orderByChild('finished')
+                .equalTo(null)
+                .limitToFirst(1)
+//                .onValue
+//                .listen((Event event) {
+//              setState(() {
+//                trainArray = new List();
+//                if (event.snapshot.value.keys != null) {
+//                  for (var key in event.snapshot.value.keys) {
+//                    dayIndex = key;
+//                    for (var train in event.snapshot.value[key]) {
+//                      trainArray.add(train);
+//                    }
+//                  }
+//                } else {
+//                  print(event.snapshot.key);
+//                  for (var key in event.snapshot.value) {
+//                    dayIndex = '0';
+//                    for (var train in key) {
+//                      trainArray.add(train);
+//                    }
+//                  }
+//                }
+//              });
+//            });
+                .once()
+                .then((DataSnapshot snapshot) {
+              setState(() {
+                loadingInfo = false;
+                trainArray = new List();
+                if (snapshot.value.keys != null) {
+                  for (var key in snapshot.value.keys) {
+                    dayIndex = key;
+                    for (var train in snapshot.value[key]) {
+                      trainArray.add(train);
+                    }
+                  }
+                } else {
+                  print(snapshot.key);
+                  for (var key in snapshot.value) {
+                    dayIndex = '0';
+                    for (var train in key) {
+                      trainArray.add(train);
+                    }
+                  }
+                }
+              });
+            });
+          }
+        });
+
+//        _trainRef.once().then((DataSnapshot snapshot) {
+//          print('LOGANDO: Connected to second database and read ${snapshot
+//              .value}');
+//        _trainRef.onValue.listen((Event event) {
+//          setState(() {
+//            trainArray = [];
+//            trainStatus = event.snapshot.value['status'];
+//            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
+//              if (event.snapshot.value['treino'][i] != null) {
+//                print(trainArray.length);
+//                trainArray.add(event.snapshot.value['treino'][i]);
+//              }
+//            }
+//          });
+//        });
+      });
+    });
   }
 }
