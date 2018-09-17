@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:run_in/login.dart';
@@ -226,7 +227,6 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print(state);
     if (state == AppLifecycleState.resumed) {
       fetchInfoFromFirebase();
     }
@@ -266,11 +266,15 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
 
   void _goTrainPage() {
     if (trainArray.length != 0) {
-//      Navigator.of(context).pushNamed('/train');
-      Navigator.of(context).push(new PageRouteBuilder(
-        pageBuilder: (_, __, ___) =>
-            new TrainPage({'trains': trainArray, 'day': dayIndex}),
-      ));
+//      Navigator.of(context).push(new PageRouteBuilder(
+//        pageBuilder: (_, __, ___) =>
+//            new TrainPage({'trains': trainArray, 'day': dayIndex}),
+//      ));
+      Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => new TrainPage({'trains': trainArray, 'day': dayIndex})),
+      );
     }
     return null;
   }
