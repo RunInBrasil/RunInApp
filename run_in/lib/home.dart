@@ -15,6 +15,8 @@ import 'package:run_in/tools/trainBuilder.dart';
 import 'package:run_in/train.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+final failedConexionSnackbar = SnackBar(content: Text('Erro ao atualizar informações, verifique sua conexão'));
+
 
 const List<Text> menuItems = <Text>[
   const Text("Sair"),
@@ -305,7 +307,15 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
           if (evaluationStatus != 'progress') {
             _goTutorialPage();
           }
+        })
+        .timeout(Duration(seconds: 20))
+        .catchError((error) {
+          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
+          setState(() {
+            loadingInfo = false;
+          });
         });
+        _evaluationRef.keepSynced(true);
 
         final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
 
@@ -386,8 +396,15 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
                   }
                 }
               });
+            })
+            .catchError((error) {
+              Scaffold.of(context).showSnackBar(failedConexionSnackbar);
             });
           }
+          _trainRef.keepSynced(true);
+        })
+        .catchError((error) {
+          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
         });
 
 //        _trainRef.once().then((DataSnapshot snapshot) {
@@ -405,7 +422,11 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
 //            }
 //          });
 //        });
+      }).catchError((error)  {
+        Scaffold.of(context).showSnackBar(failedConexionSnackbar);
       });
+    }).catchError((error) {
+      Scaffold.of(context).showSnackBar(failedConexionSnackbar);
     });
   }
 }
