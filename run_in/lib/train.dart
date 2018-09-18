@@ -197,7 +197,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     );
 
     var label = new Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: EdgeInsets.only(top: 16.0),
       child: new Center(child: _getLabel()),
     );
 
@@ -277,7 +277,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
           );
         }
         return new Text(
-          'Preparar para a proxima velocidade...',
+          'Preparar para a próxima velocidade...',
           style: TextStyle(fontSize: 20.0),
         );
       }
@@ -352,7 +352,22 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     if (timePassed <= 15 &&
         actualStep != widget.trainArray.length - 1 &&
         trainStarted) {
+      if (widget.trainArray[actualStep + 1]['speed'] == 0) {
+        return [
+          Spacer(),
+          new Text(
+            'Próxima passo...',
+            style: new TextStyle(fontSize: 16.0),
+          ),
+          new Text(
+            'Descanso',
+            style: new TextStyle(fontSize: 48.0),
+          ),
+          Spacer()
+        ];
+      }
       return [
+        Spacer(),
         new Text(
           'Próxima velocidade...',
           style: new TextStyle(fontSize: 16.0),
@@ -364,7 +379,8 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         new Text(
           'Km/h',
           style: new TextStyle(fontSize: 16.0),
-        )
+        ),
+        Spacer()
       ];
     }
 

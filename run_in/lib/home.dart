@@ -252,6 +252,10 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
       height: trainArray.length * 20.0,
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
+          if (trainArray[index]['speed'] == 0) {
+            return Text(
+                '${trainArray[index]['time'] / 60}  minutos de descanso');
+          }
           return Text(
               '${trainArray[index]['time'] / 60}  minutos na velocidade  ${trainArray[index]['speed']}');
         },

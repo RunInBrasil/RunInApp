@@ -32,8 +32,8 @@
       <file leaf-file-name="home.dart" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/home.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-184">
-              <caret line="130" column="29" lean-forward="true" selection-start-line="130" selection-start-column="29" selection-end-line="130" selection-end-column="29" />
+            <state relative-caret-position="313">
+              <caret line="256" column="71" lean-forward="false" selection-start-line="256" selection-start-column="71" selection-end-line="256" selection-end-column="71" />
               <folding />
             </state>
           </provider>
@@ -52,8 +52,8 @@
       <file leaf-file-name="train.dart" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/train.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="244">
-              <caret line="233" column="65" lean-forward="false" selection-start-line="233" selection-start-column="65" selection-end-line="233" selection-end-column="65" />
+            <state relative-caret-position="324">
+              <caret line="364" column="12" lean-forward="false" selection-start-line="364" selection-start-column="12" selection-end-line="364" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -70,10 +70,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>finished</find>
-      <find>Builder</find>
-      <find>_onButtonPressed</find>
-      <find>daysPerWeek</find>
       <find>run</find>
       <find>br.com.runin.runin</find>
       <find>_saveDaysPerWeek</find>
@@ -95,11 +91,15 @@
       <find>jpg</find>
       <find>HomePageFrame</find>
       <find>LoginPageFrame</find>
-      <find>_getSpeedlabel</find>
       <find>Date</find>
       <find>login</find>
       <find>print</find>
       <find>app</find>
+      <find>proxima velocidade...</find>
+      <find>_getSpeedlabel</find>
+      <find>_getLabel</find>
+      <find>na velo</find>
+      <find>próxima velocidade</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -716,14 +716,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/home.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-184">
-          <caret line="130" column="29" lean-forward="true" selection-start-line="130" selection-start-column="29" selection-end-line="130" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/main.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="444">
@@ -740,10 +732,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/home.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="313">
+          <caret line="256" column="71" lean-forward="false" selection-start-line="256" selection-start-column="71" selection-end-line="256" selection-end-column="71" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib/train.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="233" column="65" lean-forward="false" selection-start-line="233" selection-start-column="65" selection-end-line="233" selection-end-column="65" />
+        <state relative-caret-position="324">
+          <caret line="364" column="12" lean-forward="false" selection-start-line="364" selection-start-column="12" selection-end-line="364" selection-end-column="12" />
           <folding />
         </state>
       </provider>
