@@ -18,9 +18,9 @@ final String userAlreadyExist =
 
 final incorrectPasswordSnackBar = SnackBar(content: Text('Senha Incorreta'));
 final userAlreadExistSnackbar =
-    SnackBar(content: Text('Este usuário já esta cadastrado'));
+SnackBar(content: Text('Este usuário já esta cadastrado'));
 final errorOnRetrieveEvaluation =
-    SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
+SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
 
 final buttonColor = Color(0x99000000);
 
@@ -34,7 +34,8 @@ class LoginPage extends StatelessWidget {
         body: Container(
             decoration: new BoxDecoration(
                 image: new DecorationImage(
-                    image: new AssetImage("assets/images/lacing-shoes.jpg"), fit: BoxFit.cover)),
+                    image: new AssetImage("assets/images/lacing-shoes.jpg"),
+                    fit: BoxFit.cover)),
             child: new LoginPageFrame()));
   }
 }
@@ -53,17 +54,17 @@ class LoginPageFrame extends StatefulWidget {
     app = await FirebaseApp.configure(
       options: Platform.isIOS
           ? const FirebaseOptions(
-              googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
-              gcmSenderID: '808188414561',
-              apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
-              projectID: 'runin-d30a7',
-              databaseURL: 'https://runin-d30a7.firebaseio.com',
-            )
+        googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
+        gcmSenderID: '808188414561',
+        apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
+        projectID: 'runin-d30a7',
+        databaseURL: 'https://runin-d30a7.firebaseio.com',
+      )
           : const FirebaseOptions(
-              googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-              apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-              databaseURL: 'https://runin-d30a7.firebaseio.com',
-            ),
+        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
+        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
+        databaseURL: 'https://runin-d30a7.firebaseio.com',
+      ),
     );
   }
 }
@@ -73,6 +74,7 @@ class _LoginPageState extends State<LoginPageFrame> {
   var toRegister = false;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final loading = false;
 
   @override
   void dispose() {
@@ -86,17 +88,28 @@ class _LoginPageState extends State<LoginPageFrame> {
     if (!toRegister) {
       return new Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 32.0, right: 32.0, top: 124.0),
+          padding: const EdgeInsets.only(left: 32.0, right: 32.0, top: 0.0),
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Container(
+                  height: 158.0,
+                  decoration: new BoxDecoration(
+                      image: new DecorationImage(
+                          image: new AssetImage(
+                              "assets/images/logo.jpg"),
+                          fit: BoxFit.scaleDown)),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 child: Container(
                   decoration: new BoxDecoration(
                       borderRadius:
-                          new BorderRadius.all(new Radius.circular(32.0)),
+                      new BorderRadius.all(new Radius.circular(32.0)),
                       color: Colors.white),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16.0, right: 16.0),
@@ -117,7 +130,7 @@ class _LoginPageState extends State<LoginPageFrame> {
                 child: Container(
                   decoration: new BoxDecoration(
                       borderRadius:
-                          new BorderRadius.all(new Radius.circular(32.0)),
+                      new BorderRadius.all(new Radius.circular(32.0)),
                       color: Colors.white),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16.0, right: 16.0),
@@ -146,20 +159,20 @@ class _LoginPageState extends State<LoginPageFrame> {
 //                          sigmaX: 10.0,
 //                          sigmaY: 10.0,
 //                        ),
-                        child: new RaisedButton(
-                          shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(32.0),
-                          ),
-                          color: buttonColor,
-                          onPressed: () {
-                            setState(() {
-                              toRegister = true;
-                            });
-                          },
-                          child: Text(
-                            'Cadastrar',
-                          ),
+                      child: new RaisedButton(
+                        shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(32.0),
                         ),
+                        color: buttonColor,
+                        onPressed: () {
+                          setState(() {
+                            toRegister = true;
+                          });
+                        },
+                        child: Text(
+                          'Cadastrar',
+                        ),
+                      ),
 //                      ),
                     ),
                   ),
@@ -207,12 +220,27 @@ class _LoginPageState extends State<LoginPageFrame> {
     } else {
       return new Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 64.0, right: 64.0, top: 21.0, bottom: 32.0),
+          padding: const EdgeInsets.only(
+              left: 64.0, right: 64.0, top: 21.0, bottom: 32.0),
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Spacer(),
+              Padding(
+                padding: const EdgeInsets.all(32.0),
+                  child: BackdropFilter(filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
+                  child: Container(
+                    height: 158.0,
+                    width: 400.0,
+                    decoration: new BoxDecoration(
+                        image: new DecorationImage(
+                            image: new AssetImage(
+                                "assets/images/logo.png"),
+                            fit: BoxFit.contain)),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
                 child: Container(
@@ -390,7 +418,7 @@ class _LoginPageState extends State<LoginPageFrame> {
   Future<String> _signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+    await googleUser.authentication;
     final FirebaseUser user = await _auth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
