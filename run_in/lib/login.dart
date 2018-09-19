@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPageFrame> {
                   decoration: new BoxDecoration(
                       image: new DecorationImage(
                           image: new AssetImage(
-                              "assets/images/logo.jpg"),
+                              "assets/images/logo.png"),
                           fit: BoxFit.scaleDown)),
                 ),
               ),
