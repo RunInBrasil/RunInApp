@@ -46,18 +46,12 @@ class HomePage extends StatelessWidget {
             )
           ],
         ),
-        body: Container(
-            constraints: new BoxConstraints.expand(),
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage("assets/images/prepare-to-run.jpg"),
-                    fit: BoxFit.cover)),
-            child: Column(
+        body: Column(
               children: <Widget>[
                 new HomePageFrame(),
                 Spacer(),
               ],
-            )));
+            ));
   }
 
   void _handleMenuAction(String value) {

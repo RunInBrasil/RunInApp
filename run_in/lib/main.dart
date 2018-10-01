@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,8 +9,8 @@ import 'package:run_in/home.dart';
 import 'package:run_in/introduction/tutorial.dart';
 import 'package:run_in/login.dart';
 import 'package:run_in/train.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
+import 'package:run_in/utils/GlobalState.dart';
 
 final routes = <String, WidgetBuilder> {
   '/home': (BuildContext context) => new HomePage(),
@@ -20,29 +22,58 @@ final routes = <String, WidgetBuilder> {
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
+  FirebaseApp app;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     // This widget is the root of your application.
-    var destination;
-    if (_auth.currentUser() != null) {
-      destination = HomePage();
-//      destination = Tutorial();
-    } else {
-      destination = LoginPage();
-//      destination = Tutorial();
-    }
-
     return new MaterialApp(
-      title: 'RunIn',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.black,
-        accentColor: Colors.white
-      ),
+      color: Colors.black,
+      home: new MainPageFrame(),
       routes: routes,
-      home: destination,
     );
   }
+}
+
+class MainPageFrame extends StatefulWidget {
+
+  @override
+  _MainPageFrameState createState() {
+    return new _MainPageFrameState();
+  }
+
+}
+
+class _MainPageFrameState extends State<MainPageFrame> {
+  GlobalState _store;
+
+  @override
+  void initState() {
+    _store = GlobalState.instance;
+    fetchInfo();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Center(
+      child: new Text(_store.get(FirebaseService.TrainStatusKey) == null ? 'Nada' : _store.get(FirebaseService.TrainStatusKey)),
+    );
+  }
+
+  void fetchInfo() async {
+    await FirebaseService.fetchInfoFromFirebase();
+    if(!_store.get(FirebaseService.UserUidKey)) {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+    }
+    if(_store.get(FirebaseService.TrainStatusKey) == 'progress') {
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+    } else {
+      Navigator.pushNamedAndRemoveUntil(context, '/tutorial', (Route<dynamic> route) => false);
+    }
+    setState(() {});
+  }
+
 
 }
 

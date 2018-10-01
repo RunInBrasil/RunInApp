@@ -31,12 +31,7 @@ class LoginPage extends StatelessWidget {
 //        appBar: new AppBar(
 //          title: Text('RunIn'),
 //        ),
-        body: Container(
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage("assets/images/lacing-shoes.jpg"),
-                    fit: BoxFit.cover)),
-            child: new LoginPageFrame()));
+        body: new LoginPageFrame());
   }
 }
 

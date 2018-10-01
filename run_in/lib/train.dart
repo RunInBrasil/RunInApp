@@ -29,16 +29,8 @@ class TrainPage extends StatelessWidget {
     }
     baseContext = context;
     return new Scaffold(
-        body: Container(
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage(
-                        "assets/images/running-treadmill.jpg"),
-                    fit: BoxFit.cover)
-            ),
-            child: new TrainPageFrame(trainArray)
-        )
-    );
+        body: new TrainPageFrame(trainArray)
+        );
   }
 }
 
