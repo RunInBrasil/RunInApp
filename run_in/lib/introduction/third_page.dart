@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:run_in/tools/myDivider.dart';
 import 'package:run_in/tools/roundedOutlineButtom.dart';
 import 'package:run_in/tools/trainBuilder.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+
 
 class ThirdPage extends StatelessWidget {
   TabController _tabController;
@@ -17,6 +19,7 @@ class ThirdPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: constants.primaryColor,
       child: Column(
         children: <Widget>[
           Container(

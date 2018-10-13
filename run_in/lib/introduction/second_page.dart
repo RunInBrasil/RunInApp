@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:run_in/tools/circlePainter.dart';
 import 'package:run_in/tools/myDivider.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+
 
 class SecondPage extends StatelessWidget {
   TabController _tabController;
@@ -36,18 +38,6 @@ class SecondPage extends StatelessWidget {
                       completePercent: 75.0,
                       width: 3.0),
                   child: new Center(
-//                    child: RaisedButton(
-//                        color: Colors.transparent,
-//                        onPressed: () {
-//                          setState(() {
-//                            percentage = newPercentage;
-//                            newPercentage += 10;
-//                            if (newPercentage > 100.0) {
-//                              newPercentage = 0.0;
-//                            }
-//                            percentageAnimationController.forward(from: 0.0);
-//                          });
-//                        }),
                     child: new Text(
                       '6',
                       style: new TextStyle(fontSize: 128.0, color: Colors.white),
@@ -88,9 +78,10 @@ class SecondPage extends StatelessWidget {
       ),
     );
 
-    Widget proceedButton = FlatButton(onPressed: nextPage, child: Text('Vamos lá'));
+    Widget proceedButton = FlatButton(onPressed: nextPage, child: Text('Vamos lá', style: new TextStyle(color: constants.textColor),));
 
     return new Scaffold(
+      backgroundColor: Colors.transparent,
         body: Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,

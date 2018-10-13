@@ -8,9 +8,12 @@ import 'package:intl/intl.dart';
 import 'package:run_in/utils/GlobalState.dart';
 
 const String FirebaseAppKey = 'FirebaseApp';
-const String UserUidKey = 'UserUid';
+const String UserKey = 'User';
 const String TrainStatusKey = 'trainStatus';
+const String EvaluationStatusKey = 'evaluationStatus';
 const String TrainArrayKey = 'trainArray';
+const String TrainRefKey = 'trainRef';
+const String DayIndexKey = 'dayIndex';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 GlobalState _store = GlobalState.instance;
@@ -41,7 +44,7 @@ void fetchInfoFromFirebase() async {
   FirebaseDatabase(app: _store.get(FirebaseAppKey));
   FirebaseUser user = await _auth.currentUser();
   if (user != null) {
-    _store.set(UserUidKey, user.uid);
+    _store.set(UserKey, user);
     await configureFirebaseApp();
     DatabaseReference _evaluationRef = FirebaseDatabase.instance
         .reference()
@@ -54,7 +57,7 @@ void fetchInfoFromFirebase() async {
         Duration(seconds: 20));
 
     String evaluationStatus = snapshot.value;
-    _store.set(TrainStatusKey, evaluationStatus);
+    _store.set(EvaluationStatusKey, evaluationStatus);
     if (evaluationStatus != 'progress') {
       return;
 //      return evaluationStatus;
@@ -79,10 +82,10 @@ void fetchInfoFromFirebase() async {
     if (trainSnapshot.value != null) {
       _store.set(TrainStatusKey, 'finished');
       List trainArray = new List();
-      for (var key in snapshot.value.keys) {
-        String dayIndex = key;
-        for (int i = 0; i < snapshot.value[key].length - 1; i++) {
-          trainArray.add(snapshot.value[key][i.toString()]);
+      for (var key in trainSnapshot.value.keys) {
+        _store.set(DayIndexKey, key);
+        for (int i = 0; i < trainSnapshot.value[key].length - 1; i++) {
+          trainArray.add(trainSnapshot.value[key][i.toString()]);
         }
       }
       _store.set(TrainArrayKey, trainArray);
@@ -96,15 +99,14 @@ void fetchInfoFromFirebase() async {
       List trainArray = new List();
       if (trainSnapshot.value.keys != null) {
         for (var key in trainSnapshot.value.keys) {
-          String dayIndex = key;
+          _store.set(DayIndexKey, key);
           for (var train in trainSnapshot.value[key]) {
             trainArray.add(train);
           }
         }
       } else {
-        print(trainSnapshot.key);
         for (var key in trainSnapshot.value) {
-          String dayIndex = '0';
+          _store.set(DayIndexKey, '0');
           for (var train in key) {
             trainArray.add(train);
           }
@@ -113,5 +115,6 @@ void fetchInfoFromFirebase() async {
       _store.set(TrainArrayKey, trainArray);
     }
     _trainRef.keepSynced(true);
+    _store.set(TrainRefKey, _trainRef);
   }
 }

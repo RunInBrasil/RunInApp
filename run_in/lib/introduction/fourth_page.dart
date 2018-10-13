@@ -12,6 +12,8 @@ import 'package:run_in/tools/circlePainter.dart';
 import 'package:countdown/countdown.dart';
 import 'package:run_in/tools/myDivider.dart';
 import 'package:run_in/tools/trainBuilder.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -44,23 +46,6 @@ class FourthPageFrame extends StatefulWidget {
   _FourthPageFrameState createState() {
     return new _FourthPageFrameState();
   }
-
-//  Future configureFirebaseApp() async {
-//    app = await FirebaseApp.configure(
-//      name: 'db2',
-//      options: Platform.isIOS
-//          ? const FirebaseOptions(
-//        googleAppID: '1:808188414561:ios:7e6d93c2f42792e9',
-//        gcmSenderID: '808188414561',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      )
-//          : const FirebaseOptions(
-//        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-//        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      ),
-//    );
-//  }
 
   Future getUser() async {
     user = await _auth.currentUser();
@@ -156,18 +141,6 @@ class _FourthPageFrameState extends State<FourthPageFrame>
                       completePercent: percentage,
                       width: 3.0),
                   child: new Center(
-//                    child: RaisedButton(
-//                        color: Colors.transparent,
-//                        onPressed: () {
-//                          setState(() {
-//                            percentage = newPercentage;
-//                            newPercentage += 10;
-//                            if (newPercentage > 100.0) {
-//                              newPercentage = 0.0;
-//                            }
-//                            percentageAnimationController.forward(from: 0.0);
-//                          });
-//                        }),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: _getSpeedlabel(),
@@ -267,8 +240,11 @@ class _FourthPageFrameState extends State<FourthPageFrame>
         ),
       ),
     );
-    var screen = new Column(
-      children: <Widget>[roundClock, timer, label, playButton],
+    var screen = new Container(
+      color: constants.primaryColor,
+      child: new Column(
+        children: <Widget>[roundClock, timer, label, playButton],
+      ),
     );
     return screen;
   }

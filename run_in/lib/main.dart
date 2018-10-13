@@ -13,6 +13,7 @@ import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 import 'package:run_in/utils/GlobalState.dart';
 
 final routes = <String, WidgetBuilder> {
+  '/main': (BuildContext context) => new MyApp(),
   '/home': (BuildContext context) => new HomePage(),
   '/login': (BuildContext context) => new LoginPage(),
 //  '/train': (BuildContext context) => new TrainPage(),
@@ -29,7 +30,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // This widget is the root of your application.
     return new MaterialApp(
-      color: Colors.black,
+      theme: ThemeData(
+        textTheme: Theme.of(context).textTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white
+        ),
+        primaryColor: Colors.black
+      ),
       home: new MainPageFrame(),
       routes: routes,
     );
@@ -63,10 +70,11 @@ class _MainPageFrameState extends State<MainPageFrame> {
 
   void fetchInfo() async {
     await FirebaseService.fetchInfoFromFirebase();
-    if(!_store.get(FirebaseService.UserUidKey)) {
+    if(_store.get(FirebaseService.UserKey) == null) {
       Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+      return;
     }
-    if(_store.get(FirebaseService.TrainStatusKey) == 'progress') {
+    if(_store.get(FirebaseService.EvaluationStatusKey) == 'progress') {
       Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
     } else {
       Navigator.pushNamedAndRemoveUntil(context, '/tutorial', (Route<dynamic> route) => false);

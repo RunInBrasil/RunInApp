@@ -50,23 +50,6 @@ class TrainPageFrame extends StatefulWidget {
     return new _TrainPageFrameState();
   }
 
-//  Future configureFirebaseApp() async {
-//    app = await FirebaseApp.configure(
-//      name: 'db2',
-//      options: Platform.isIOS
-//          ? const FirebaseOptions(
-//        googleAppID: '1:808188414561:ios:7e6d93c2f42792e9',
-//        gcmSenderID: '808188414561',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      )
-//          : const FirebaseOptions(
-//        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-//        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      ),
-//    );
-//  }
-
   Future getUser() async {
     user = await _auth.currentUser();
   }
@@ -95,23 +78,6 @@ class _TrainPageFrameState extends State<TrainPageFrame>
           .child('trains')
           .child(widget.user.uid)
           .child('treinos');
-
-//          .child(f.format(new DateTime.now()));
-//
-//      await _trainRef.once().then((DataSnapshot snapshot) {
-//        print('LOGANDO: Connected to second database and read ${snapshot
-//            .value}');
-//        setState(() {
-//          trainArray = snapshot.value['treino'];
-//          trainArray = [];
-//          for (int i = 0; i < (snapshot.value['treino']).length; i++) {
-//            if (snapshot.value['treino'][i] != null) {
-//              print(trainArray.length);
-//              trainArray.add(snapshot.value['treino'][i]);
-//            }
-//          }
-//        });
-//      });
     });
 
     setState(() {
@@ -154,18 +120,6 @@ class _TrainPageFrameState extends State<TrainPageFrame>
                       completePercent: percentage,
                       width: 4.0),
                   child: new Center(
-//                    child: RaisedButton(
-//                        color: Colors.transparent,
-//                        onPressed: () {
-//                          setState(() {
-//                            percentage = newPercentage;
-//                            newPercentage += 10;
-//                            if (newPercentage > 100.0) {
-//                              newPercentage = 0.0;
-//                            }
-//                            percentageAnimationController.forward(from: 0.0);
-//                          });
-//                        }),
                     child: new Column(
                       children: _getSpeedlabel(),
                     ),

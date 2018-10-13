@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:run_in/tools/myDivider.dart';
 import 'package:run_in/tools/roundedOutlineButtom.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+
 
 class FifthPage extends StatelessWidget{
 
@@ -15,6 +17,7 @@ class FifthPage extends StatelessWidget{
   Widget build(BuildContext context) {
     this.context = context;
     return Material(
+      color: constants.primaryColor,
       child: Column(
         children: <Widget>[
           Container(
@@ -54,6 +57,6 @@ class FifthPage extends StatelessWidget{
   void _navigateToMainPage() {
     Navigator
         .of(context)
-        .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+        .pushNamedAndRemoveUntil('/main', (Route<dynamic> route) => false);
   }
 }

@@ -13,6 +13,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:run_in/tools/trainBuilder.dart';
 import 'package:run_in/train.dart';
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
+import 'package:run_in/utils/GlobalState.dart';
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final failedConexionSnackbar = SnackBar(content: Text('Erro ao atualizar informações, verifique sua conexão'));
@@ -86,29 +89,6 @@ class HomePageFrame extends StatefulWidget {
   _HomePageFrameState createState() {
     return new _HomePageFrameState();
   }
-
-  Future configureFirebaseApp() async {
-    app = await FirebaseApp.configure(
-      name: 'run-in',
-      options: Platform.isIOS
-          ? const FirebaseOptions(
-              googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
-              gcmSenderID: '808188414561',
-              apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
-              projectID: 'runin-d30a7',
-              databaseURL: 'https://runin-d30a7.firebaseio.com',
-            )
-          : const FirebaseOptions(
-              googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-              apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-              databaseURL: 'https://runin-d30a7.firebaseio.com',
-            ),
-    );
-  }
-
-  Future getUser() async {
-    user = await _auth.currentUser();
-  }
 }
 
 class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserver {
@@ -121,6 +101,23 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
   bool loadingInfo = false;
 
   var trainStatus = '';
+
+  GlobalState _store;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _store = GlobalState.instance;
+    final f = new DateFormat('yyyy-MM-dd');
+    today = f.format(new DateTime.now());
+    dayIndex = _store.get(FirebaseService.DayIndexKey);
+    trainArray = _store.get(FirebaseService.TrainArrayKey);
+    evaluationStatus = _store.get(FirebaseService.TrainStatusKey);
+    _trainRef = _store.get(FirebaseService.TrainRefKey);
+
+    print(dayIndex);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -224,15 +221,8 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      fetchInfoFromFirebase();
+      FirebaseService.fetchInfoFromFirebase();
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    fetchInfoFromFirebase();
   }
 
 
@@ -284,82 +274,102 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
     return null;
   }
 
-  void fetchInfoFromFirebase() {
-    setState(() {
-      loadingInfo = true;
-    });
-    widget.getUser().then((response) {
-      widget.configureFirebaseApp().then((response) {
-        DatabaseReference _evaluationRef = FirebaseDatabase.instance
-            .reference()
-            .child('trains')
-            .child(widget.user.uid)
-            .child('status');
-
-        _evaluationRef.once().then((DataSnapshot snapshot) {
-          evaluationStatus = snapshot.value;
-          if (evaluationStatus != 'progress') {
-            _goTutorialPage();
-          }
-        })
-        .timeout(Duration(seconds: 20))
-        .catchError((error) {
-          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-          setState(() {
-            loadingInfo = false;
-          });
-        });
-        _evaluationRef.keepSynced(true);
-
-        final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
-
-        final f = new DateFormat('yyyy-MM-dd');
-        today = f.format(new DateTime.now());
-
-        _trainRef = database
-            .reference()
-            .child('trains')
-            .child(widget.user.uid)
-            .child('treinos');
-
-        _trainRef
-            .orderByChild('finished')
-            .equalTo(f.format(new DateTime.now()))
-//            .onValue
-//            .listen((Event event) {
-            .once()
-            .then((DataSnapshot snapshot) {
-          if (snapshot.value != null) {
-            setState(() {
-              loadingInfo = false;
-              trainStatus = 'finished';
-              trainArray = new List();
-              for (var key in snapshot.value.keys) {
-                dayIndex = key;
-                for (int i = 0; i < snapshot.value[key].length - 1; i++) {
-                  trainArray.add(snapshot.value[key][i.toString()]);
-                }
-              }
-            });
-          } else {
-            _trainRef
-                .orderByChild('finished')
-                .equalTo(null)
-                .limitToFirst(1)
-//                .onValue
-//                .listen((Event event) {
+//  void fetchInfoFromFirebase() {
+//    setState(() {
+//      loadingInfo = true;
+//    });
+//    widget.getUser().then((response) {
+//      widget.configureFirebaseApp().then((response) {
+//        DatabaseReference _evaluationRef = FirebaseDatabase.instance
+//            .reference()
+//            .child('trains')
+//            .child(widget.user.uid)
+//            .child('status');
+//
+//        _evaluationRef.once().then((DataSnapshot snapshot) {
+//          evaluationStatus = snapshot.value;
+//          if (evaluationStatus != 'progress') {
+//            _goTutorialPage();
+//          }
+//        })
+//            .timeout(Duration(seconds: 20))
+//            .catchError((error) {
+//          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
+//          setState(() {
+//            loadingInfo = false;
+//          });
+//        });
+//        _evaluationRef.keepSynced(true);
+//
+//        final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
+//
+//        _trainRef = database
+//            .reference()
+//            .child('trains')
+//            .child(widget.user.uid)
+//            .child('treinos');
+//
+//        _trainRef
+//            .orderByChild('finished')
+//            .equalTo(f.format(new DateTime.now()))
+////            .onValue
+////            .listen((Event event) {
+//            .once()
+//            .then((DataSnapshot snapshot) {
+//          if (snapshot.value != null) {
+//            setState(() {
+//              loadingInfo = false;
+//              trainStatus = 'finished';
+//              trainArray = new List();
+//              for (var key in snapshot.value.keys) {
+//                dayIndex = key;
+//                for (int i = 0; i < snapshot.value[key].length - 1; i++) {
+//                  trainArray.add(snapshot.value[key][i.toString()]);
+//                }
+//              }
+//            });
+//          } else {
+//            _trainRef
+//                .orderByChild('finished')
+//                .equalTo(null)
+//                .limitToFirst(1)
+////                .onValue
+////                .listen((Event event) {
+////              setState(() {
+////                trainArray = new List();
+////                if (event.snapshot.value.keys != null) {
+////                  for (var key in event.snapshot.value.keys) {
+////                    dayIndex = key;
+////                    for (var train in event.snapshot.value[key]) {
+////                      trainArray.add(train);
+////                    }
+////                  }
+////                } else {
+////                  print(event.snapshot.key);
+////                  for (var key in event.snapshot.value) {
+////                    dayIndex = '0';
+////                    for (var train in key) {
+////                      trainArray.add(train);
+////                    }
+////                  }
+////                }
+////              });
+////            });
+//                .once()
+//                .then((DataSnapshot snapshot) {
 //              setState(() {
+//                loadingInfo = false;
 //                trainArray = new List();
-//                if (event.snapshot.value.keys != null) {
-//                  for (var key in event.snapshot.value.keys) {
+//                if (snapshot.value.keys != null) {
+//                  for (var key in snapshot.value.keys) {
 //                    dayIndex = key;
-//                    for (var train in event.snapshot.value[key]) {
+//                    for (var train in snapshot.value[key]) {
 //                      trainArray.add(train);
 //                    }
 //                  }
 //                } else {
-//                  print(event.snapshot.key);
-//                  for (var key in event.snapshot.value) {
+//                  print(snapshot.key);
+//                  for (var key in snapshot.value) {
 //                    dayIndex = '0';
 //                    for (var train in key) {
 //                      trainArray.add(train);
@@ -367,60 +377,37 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
 //                  }
 //                }
 //              });
+//            })
+//                .catchError((error) {
+//              Scaffold.of(context).showSnackBar(failedConexionSnackbar);
 //            });
-                .once()
-                .then((DataSnapshot snapshot) {
-              setState(() {
-                loadingInfo = false;
-                trainArray = new List();
-                if (snapshot.value.keys != null) {
-                  for (var key in snapshot.value.keys) {
-                    dayIndex = key;
-                    for (var train in snapshot.value[key]) {
-                      trainArray.add(train);
-                    }
-                  }
-                } else {
-                  print(snapshot.key);
-                  for (var key in snapshot.value) {
-                    dayIndex = '0';
-                    for (var train in key) {
-                      trainArray.add(train);
-                    }
-                  }
-                }
-              });
-            })
-            .catchError((error) {
-              Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-            });
-          }
-          _trainRef.keepSynced(true);
-        })
-        .catchError((error) {
-          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-        });
-
-//        _trainRef.once().then((DataSnapshot snapshot) {
-//          print('LOGANDO: Connected to second database and read ${snapshot
-//              .value}');
-//        _trainRef.onValue.listen((Event event) {
-//          setState(() {
-//            trainArray = [];
-//            trainStatus = event.snapshot.value['status'];
-//            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
-//              if (event.snapshot.value['treino'][i] != null) {
-//                print(trainArray.length);
-//                trainArray.add(event.snapshot.value['treino'][i]);
-//              }
-//            }
-//          });
+//          }
+//          _trainRef.keepSynced(true);
+//        })
+//            .catchError((error) {
+//          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
 //        });
-      }).catchError((error)  {
-        Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-      });
-    }).catchError((error) {
-      Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-    });
-  }
+//
+////        _trainRef.once().then((DataSnapshot snapshot) {
+////          print('LOGANDO: Connected to second database and read ${snapshot
+////              .value}');
+////        _trainRef.onValue.listen((Event event) {
+////          setState(() {
+////            trainArray = [];
+////            trainStatus = event.snapshot.value['status'];
+////            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
+////              if (event.snapshot.value['treino'][i] != null) {
+////                print(trainArray.length);
+////                trainArray.add(event.snapshot.value['treino'][i]);
+////              }
+////            }
+////          });
+////        });
+//      }).catchError((error)  {
+//        Scaffold.of(context).showSnackBar(failedConexionSnackbar);
+//      });
+//    }).catchError((error) {
+//      Scaffold.of(context).showSnackBar(failedConexionSnackbar);
+//    });
+//  }
 }

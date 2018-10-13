@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:run_in/utils/constants.dart' as constants;
 
 class myRoundedOutlineButtom extends StatelessWidget {
   final String text;
@@ -33,7 +34,7 @@ class myRoundedOutlineButtom extends StatelessWidget {
                 ),
                 child: BackdropFilter(
                     filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                    child: Text(text))),
+                    child: Text(text, style: new TextStyle(color: constants.textColor),))),
           ),
         ),
       ),
