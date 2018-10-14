@@ -4,12 +4,9 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
 final String passwordInvalid =
     'PlatformException(exception, The password is invalid or the user does not have a password., null)';
@@ -51,6 +48,7 @@ class _LoginPageState extends State<LoginPageFrame> {
   var toRegister = false;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final nameController = TextEditingController();
   final loading = false;
 
   @override
@@ -262,6 +260,27 @@ class _LoginPageState extends State<LoginPageFrame> {
                 ),
               ),
               Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Container(
+                  decoration: new BoxDecoration(
+                      borderRadius:
+                      new BorderRadius.all(new Radius.circular(32.0)),
+                      color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: new TextFormField(
+                      style: new TextStyle(color: Colors.black),
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: 'Nome',
+                        labelStyle: new TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.fromLTRB(32.0, 8.0, 32.0, 8.0),
                 child: new RaisedButton(
                   shape: new RoundedRectangleBorder(
@@ -324,16 +343,8 @@ class _LoginPageState extends State<LoginPageFrame> {
     setState(() {});
     _showDialog();
     _signInWithGoogle().then((response) {
-      _getEvaluationStatus().then((response) {
-        Navigator.pop(context);
-        if (response == 'progress') {
-          _navigateToMainPage(context);
-        } else {
-          _navigateToTutorialPage(context);
-        }
-      }).catchError((onError) {
-        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
-      });
+      Navigator.pop(context);
+      _navigateNextPage();
     }).catchError((onError) {
       Navigator.pop(context);
     });
@@ -349,16 +360,8 @@ class _LoginPageState extends State<LoginPageFrame> {
     });
     _showDialog();
     _signInWithEmail().then((responseA) {
-      _getEvaluationStatus().then((responseB) {
-        Navigator.pop(context);
-        if (responseB == 'progress') {
-          _navigateToMainPage(context);
-        } else {
-          _navigateToTutorialPage(context);
-        }
-      }).catchError((onError) {
-        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
-      });
+      Navigator.pop(context);
+      _navigateNextPage();
     }).catchError((onError) {
       Navigator.pop(context);
       print('LOG: ');
@@ -372,16 +375,8 @@ class _LoginPageState extends State<LoginPageFrame> {
   void _registerEmail() {
     _showDialog();
     _registerWithEmail().then((response) {
-      _getEvaluationStatus().then((response) {
-        Navigator.pop(context);
-        if (response == 'progress') {
-          _navigateToMainPage(context);
-        } else {
-          _navigateToTutorialPage(context);
-        }
-      }).catchError((onError) {
-        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
-      });
+      Navigator.pop(context);
+      _navigateNextPage();
     }).catchError((onError) {
       Navigator.pop(context);
       print(onError.hashCode);
@@ -393,37 +388,15 @@ class _LoginPageState extends State<LoginPageFrame> {
   }
 
   Future<String> _signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
-    final FirebaseUser user = await _auth.signInWithGoogle(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    assert(user.email != null);
-    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
-
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
-
-    return 'signInWithGoogle succeeded: $user';
+    await FirebaseService.signInWithGoogle();
   }
 
   Future<String> _signInWithEmail() async {
-    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
-    assert(user.email != null);
-//    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
+    await FirebaseService.signInWithEmail(email, password);
 
-    return 'signInWithGoogle succeeded: $user';
   }
 
   Future<String> _registerWithEmail() async {
@@ -431,31 +404,17 @@ class _LoginPageState extends State<LoginPageFrame> {
     print('LOG: ${emailController.text}');
     print('LOG: ${passwordController.text}');
 
-    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    String name = nameController.text.trim();
 
-    assert(user.email != null);
-//    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
+    await FirebaseService.registerWithEmail(email, password, name);
 
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
-
-    print("LOG: User registered in: $user");
-
-    return 'register succeeded: $user';
   }
 
   void _navigateToMainPage(BuildContext context) {
     Navigator.of(context)
-        .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-  }
-
-  void _navigateToTutorialPage(BuildContext context) {
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil('/tutorial', (Route<dynamic> route) => false);
+        .pushNamedAndRemoveUntil('/main', (Route<dynamic> route) => false);
   }
 
   void _showDialog() {
@@ -469,15 +428,9 @@ class _LoginPageState extends State<LoginPageFrame> {
         });
   }
 
-  Future<String> _getEvaluationStatus() async {
-    FirebaseUser user = await _auth.currentUser();
-    DatabaseReference _evaluationRef = FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid)
-        .child('status');
-
-    DataSnapshot snapshot = await _evaluationRef.once();
-    return snapshot.value;
+  void _navigateNextPage() async {
+    if (await FirebaseService.isAuthenticated()) {
+      _navigateToMainPage(context);
+    }
   }
 }

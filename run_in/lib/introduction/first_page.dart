@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:run_in/objects/User.dart';
 import 'package:run_in/utils/GlobalState.dart';
 import 'package:run_in/utils/constants.dart' as constants;
-import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 
 
 
@@ -34,7 +34,7 @@ class FirstPage extends StatelessWidget {
                 shape: new RoundedRectangleBorder(
                   borderRadius: new BorderRadius.circular(32.0)
                 ),
-                color: Colors.transparent,
+                color: constants.primaryColor,
                 child: new Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
@@ -45,13 +45,16 @@ class FirstPage extends StatelessWidget {
                       size: 128.0,
                       color: Colors.white,),
                     ),
-                    new Text(getTitle(),
-                    style: Theme.of(context).copyWith().textTheme.title),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                      child: new Text(getTitle(),
+                      style: Theme.of(context).copyWith().textTheme.title),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
                       child: new Container(
                         child: new Text(constants.firstPageText,
-                          style: new TextStyle(fontSize: 14.0),),
+                          style: new TextStyle(fontSize: 16.0),),
                       ),
                     ),
                   ],
@@ -112,6 +115,7 @@ class FirstPage extends StatelessWidget {
   }
 
   String getTitle() {
-    return 'Bem vindo Luis. Você esta dentro';
+    User user = _store.get(_store.USER_KEY);
+    return 'Bem-vindo, ${user.name}. Você está dentro.';
   }
 }

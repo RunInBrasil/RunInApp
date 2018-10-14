@@ -11,6 +11,8 @@ import 'package:run_in/login.dart';
 import 'package:run_in/train.dart';
 import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 import 'package:run_in/utils/GlobalState.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+
 
 final routes = <String, WidgetBuilder> {
   '/main': (BuildContext context) => new MyApp(),
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
           bodyColor: Colors.white,
           displayColor: Colors.white
         ),
-        primaryColor: Colors.black
+        primaryColor: Colors.white
       ),
       home: new MainPageFrame(),
       routes: routes,
@@ -69,12 +71,12 @@ class _MainPageFrameState extends State<MainPageFrame> {
   }
 
   void fetchInfo() async {
-    await FirebaseService.fetchInfoFromFirebase();
-    if(_store.get(FirebaseService.UserKey) == null) {
+    if(await FirebaseService.isAuthenticated() == false) {
       Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
       return;
     }
-    if(_store.get(FirebaseService.EvaluationStatusKey) == 'progress') {
+    await FirebaseService.getInitialInfo();
+    if(_store.get(_store.TRAIN_ARRAY_KEY) != null) {
       Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
     } else {
       Navigator.pushNamedAndRemoveUntil(context, '/tutorial', (Route<dynamic> route) => false);

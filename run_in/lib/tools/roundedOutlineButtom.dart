@@ -24,7 +24,7 @@ class myRoundedOutlineButtom extends StatelessWidget {
           width: 200.0,
           height: 50.0,
           child: BackdropFilter(
-            filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+            filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
             child: new OutlineButton(
                 borderSide: BorderSide(color: Colors.white),
                 color: Colors.transparent,
@@ -33,7 +33,7 @@ class myRoundedOutlineButtom extends StatelessWidget {
                   borderRadius: new BorderRadius.circular(24.0),
                 ),
                 child: BackdropFilter(
-                    filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
                     child: Text(text, style: new TextStyle(color: constants.textColor),))),
           ),
         ),

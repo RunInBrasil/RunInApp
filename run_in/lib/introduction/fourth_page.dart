@@ -8,11 +8,15 @@ import 'package:intl/intl.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:run_in/objects/TrainMetadata.dart';
+import 'package:run_in/objects/User.dart';
 import 'package:run_in/tools/circlePainter.dart';
 import 'package:countdown/countdown.dart';
 import 'package:run_in/tools/myDivider.dart';
 import 'package:run_in/tools/trainBuilder.dart';
+import 'package:run_in/utils/GlobalState.dart';
 import 'package:run_in/utils/constants.dart' as constants;
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -29,7 +33,9 @@ class FourthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     baseContext = context;
-    return new Scaffold(body: new FourthPageFrame(_tabController));
+    return new Scaffold(
+      backgroundColor: Colors.transparent,
+        body: new FourthPageFrame(_tabController));
   }
 }
 
@@ -64,15 +70,17 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   CountDown countDown;
   var sub;
   final formatter = new NumberFormat("##00");
-  int daysPerWeek;
+  TrainMetadata metadata;
+  User user;
+  GlobalState _store;
 
   @override
   void initState() {
+    _store = GlobalState.instance;
+    metadata = _store.get(_store.TRAIN_METADATA_KEY);
+    user = _store.get(_store.USER_KEY);
     trainArray = _buildPerfomanceTest();
     timePassed = trainArray[actualStep]['time'];
-
-    getDaysPerWeek();
-
     percentageAnimationController = new AnimationController(
         vsync: this, duration: new Duration(milliseconds: 10000))
       ..addListener(() {
@@ -83,21 +91,6 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       });
   }
 
-  getDaysPerWeek() async {
-    FirebaseUser user = await _auth.currentUser();
-    FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid)
-        .child('days_per_week')
-        .once()
-        .then((DataSnapshot snapshot) {
-          setState(() {
-            daysPerWeek = snapshot.value;
-          });
-    });
-  }
-
   @override
   void dispose() {
     percentageAnimationController.dispose();
@@ -106,11 +99,17 @@ class _FourthPageFrameState extends State<FourthPageFrame>
 
   List _buildPerfomanceTest() {
     var test = new List(18);
+    int startPoint;
+    if(user.gender == user.FEMININE) {
+      startPoint = 4;
+    } else {
+      startPoint = 5;
+    }
 
-    for (int i = 4; i < 18; i++) {
-      test[i - 4] = new Map();
-      test[i - 4]['speed'] = i;
-      test[i - 4]['time'] = 60;
+    for (int i = startPoint; i < 18; i++) {
+      test[i - startPoint] = new Map();
+      test[i - startPoint]['speed'] = i;
+      test[i - startPoint]['time'] = 60;
     }
 
     return test;
@@ -119,7 +118,7 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   @override
   Widget build(BuildContext context) {
     var roundClock = Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 32.0, 0.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: Center(
         child: PhysicalModel(
           color: Colors.transparent,
@@ -128,10 +127,10 @@ class _FourthPageFrameState extends State<FourthPageFrame>
             child: BackdropFilter(
               filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: new Container(
-                width: 250.0,
-                height: 250.0,
+                width: 220.0,
+                height: 220.0,
                 decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.circular(150.0),
+                  borderRadius: new BorderRadius.circular(130.0),
                   color: Colors.transparent,
                 ),
                 child: new CustomPaint(
@@ -240,10 +239,18 @@ class _FourthPageFrameState extends State<FourthPageFrame>
         ),
       ),
     );
-    var screen = new Container(
+    var screen = new Card(
+      shape: new RoundedRectangleBorder(
+        borderRadius: new BorderRadius.circular(32.0)
+      ),
       color: constants.primaryColor,
-      child: new Column(
-        children: <Widget>[roundClock, timer, label, playButton],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: new Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[new Spacer(),roundClock, timer, label, playButton, new Spacer()],
+        ),
       ),
     );
     return screen;
@@ -409,30 +416,19 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   }
 
   Future saveUserEvaluation() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    DatabaseReference reference = FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid);
 
-    reference.child('status').set('progress');
-    reference.child('start_date').set(new DateTime.now());
-    reference.child('evaluation_speed').set(trainArray[actualStep]['speed']);
+    metadata.evaluationSpeed = trainArray[actualStep]['speed'];
+    metadata.status = 'progress';
+    metadata.startDate = new DateTime.now().toIso8601String();
 
-    if (daysPerWeek == null) {
-      await getDaysPerWeek();
-    }
+    FirebaseService.setTrainMetadata(metadata);
 
-    TrainBuilder builder = new TrainBuilder(daysPerWeek, trainArray[actualStep]['speed']);
+    TrainBuilder builder = new TrainBuilder(metadata.daysPerWeek, trainArray[actualStep]['speed']);
     builder.build();
     Map trains = builder.getTrain();
 
-    FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid)
-        .child('treinos')
-        .set(trains);
+
+    FirebaseService.setTrain(trains);
 
 //    for (var train in  trains) {
 //      for (var trainDeep in train) {

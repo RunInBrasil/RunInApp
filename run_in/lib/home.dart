@@ -221,7 +221,7 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      FirebaseService.fetchInfoFromFirebase();
+      FirebaseService.getInitialInfo();
     }
   }
 
