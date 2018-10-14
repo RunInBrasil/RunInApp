@@ -41,6 +41,13 @@ flutter:
     - assets/icons/gmail_icon.png
     - assets/images/tutorial_cover.png
     - assets/images/prepare_to_run.png
+    - assets/images/pre_login_background.png
+    - assets/images/logo_wide.jpg
+    - assets/images/first_page.png
+    - assets/images/third_page.jpg
+    - assets/images/fourth_page.jpg
+    - assets/images/fifth_page.jpg
+
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 

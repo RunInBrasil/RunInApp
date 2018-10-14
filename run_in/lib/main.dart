@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:run_in/home.dart';
 import 'package:run_in/introduction/tutorial.dart';
 import 'package:run_in/login.dart';
+import 'package:run_in/pre_intro/pre_intro.dart';
 import 'package:run_in/train.dart';
 import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 import 'package:run_in/utils/GlobalState.dart';
@@ -19,7 +20,8 @@ final routes = <String, WidgetBuilder> {
   '/home': (BuildContext context) => new HomePage(),
   '/login': (BuildContext context) => new LoginPage(),
 //  '/train': (BuildContext context) => new TrainPage(),
-  '/tutorial': (BuildContext context) => new Tutorial()
+  '/tutorial': (BuildContext context) => new Tutorial(),
+  '/pre_intro': (BuildContext context) => new PreIntro()
 };
 
 void main() => runApp(new MyApp());
@@ -72,7 +74,7 @@ class _MainPageFrameState extends State<MainPageFrame> {
 
   void fetchInfo() async {
     if(await FirebaseService.isAuthenticated() == false) {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (Route<dynamic> route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/pre_intro', (Route<dynamic> route) => false);
       return;
     }
     await FirebaseService.getInitialInfo();
