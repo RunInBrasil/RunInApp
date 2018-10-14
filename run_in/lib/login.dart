@@ -19,7 +19,11 @@ SnackBar(content: Text('Este usuário já esta cadastrado'));
 final errorOnRetrieveEvaluation =
 SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
 
-final buttonColor = Color(0x99000000);
+final String logoPath = 'assets/images/logo_wide.jpg';
+final String background = 'assets/images/login_background.jpg';
+
+//final buttonColor = Color(0x99000000);
+final buttonColor = Colors.white;
 
 class LoginPage extends StatelessWidget {
   @override
@@ -28,7 +32,13 @@ class LoginPage extends StatelessWidget {
 //        appBar: new AppBar(
 //          title: Text('RunIn'),
 //        ),
-        body: new LoginPageFrame());
+        body: new Container(
+          decoration: new BoxDecoration(
+            image: new DecorationImage(
+                image: new AssetImage(background),
+            fit: BoxFit.cover)
+          ),
+            child: new LoginPageFrame()));
   }
 }
 
@@ -64,18 +74,19 @@ class _LoginPageState extends State<LoginPageFrame> {
       return new Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 32.0, right: 32.0, top: 0.0),
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: new ListView(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(32.0),
                 child: Container(
                   height: 158.0,
                   decoration: new BoxDecoration(
+                    shape: BoxShape.circle,
                       image: new DecorationImage(
                           image: new AssetImage(
-                              "assets/images/logo.png"),
+                              logoPath),
                           fit: BoxFit.scaleDown)),
                 ),
               ),
@@ -196,22 +207,22 @@ class _LoginPageState extends State<LoginPageFrame> {
       return new Center(
         child: Padding(
           padding: const EdgeInsets.only(
-              left: 64.0, right: 64.0, top: 21.0, bottom: 32.0),
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+              left: 64.0, right: 64.0),
+          child: new ListView(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Spacer(),
               Padding(
-                padding: const EdgeInsets.all(32.0),
+                padding: const EdgeInsets.all(16.0),
                   child: BackdropFilter(filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
                   child: Container(
                     height: 158.0,
                     width: 400.0,
                     decoration: new BoxDecoration(
+                      shape: BoxShape.circle,
                         image: new DecorationImage(
                             image: new AssetImage(
-                                "assets/images/logo.png"),
+                                logoPath),
                             fit: BoxFit.contain)),
                   ),
                 ),
