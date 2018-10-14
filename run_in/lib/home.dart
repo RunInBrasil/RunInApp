@@ -15,9 +15,9 @@ import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 import 'package:run_in/utils/GlobalState.dart';
 import 'package:run_in/utils/constants.dart' as constants;
 
-
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final failedConexionSnackbar = SnackBar(content: Text('Erro ao atualizar informações, verifique sua conexão'));
+final failedConexionSnackbar = SnackBar(
+    content: Text('Erro ao atualizar informações, verifique sua conexão'));
 
 final String backgroundImagePath = "assets/images/prepare_to_run.png";
 
@@ -33,35 +33,34 @@ class HomePage extends StatelessWidget {
     baseContext = context;
     return new Container(
       decoration: new BoxDecoration(
-          image: new DecorationImage(image: new AssetImage(
-              backgroundImagePath),
-              fit: BoxFit.cover)
-      ),
+          image: new DecorationImage(
+              image: new AssetImage(backgroundImagePath), fit: BoxFit.cover)),
       child: new Scaffold(
         backgroundColor: Colors.transparent,
-          appBar: new AppBar(
-            title: Text('RunIn'),
-            backgroundColor: Colors.transparent,
-            actions: <Widget>[
-              new PopupMenuButton(
-                itemBuilder: (BuildContext context) {
-                  return menuItems.map((Text item) {
-                    return new PopupMenuItem(
-                      value: item.data,
-                      child: item,
-                    );
-                  }).toList();
-                },
-                onSelected: _handleMenuAction,
-              )
-            ],
-          ),
-          body: Column(
-                  children: <Widget>[
-                    new HomePageFrame(),
-                    Spacer(),
-                  ],
-                ),),
+        appBar: new AppBar(
+          title: Text('RunIn'),
+          backgroundColor: Colors.transparent,
+          actions: <Widget>[
+            new PopupMenuButton(
+              itemBuilder: (BuildContext context) {
+                return menuItems.map((Text item) {
+                  return new PopupMenuItem(
+                    value: item.data,
+                    child: item,
+                  );
+                }).toList();
+              },
+              onSelected: _handleMenuAction,
+            )
+          ],
+        ),
+        body: Column(
+          children: <Widget>[
+            new HomePageFrame(),
+            Spacer(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -91,13 +90,16 @@ class HomePageFrame extends StatefulWidget {
   }
 }
 
-class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserver {
+class _HomePageFrameState extends State<HomePageFrame>
+    with WidgetsBindingObserver {
   var trainArray = [];
   DatabaseReference _trainRef;
   int dayIndex;
   String today;
+  List<Train> completedTrains;
 
   bool loadingInfo = false;
+  NumberFormat percentageFormatter = new NumberFormat("#");
 
   var trainStatus = '';
 
@@ -112,8 +114,11 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
     today = f.format(new DateTime.now());
     trainArray = _store.get(_store.TRAIN_ARRAY_KEY);
 
-    for(Train train in trainArray) {
-      if (train.finished == new DateTime.now().toIso8601String().substring(0, 10)) {
+    completedTrains = new List();
+
+    for (Train train in trainArray) {
+      if (train.finished ==
+          new DateTime.now().toIso8601String().substring(0, 10)) {
         dayIndex = train.index;
         trainStatus = 'finished';
         break;
@@ -123,73 +128,150 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
         break;
       }
     }
+
+    for (Train train in trainArray) {
+      if (train.finished != null) {
+        completedTrains.add(train);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var todayTrain = Padding(
+    trainArray = _store.get(_store.TRAIN_ARRAY_KEY);
+    completedTrains = new List();
+    for (Train train in trainArray) {
+      if (train.finished != null) {
+        completedTrains.add(train);
+      }
+    }
+    Widget todayTrain = Padding(
       padding: const EdgeInsets.all(8.0),
       child: new Card(
-        color: constants.primaryColor,
+          color: constants.primaryColor,
           child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              new Expanded(
-                child: ListTile(
-                  leading: const Icon(Icons.directions_run, color: Colors.white,),
-                  title: new Text(getTodayDate(), style: new TextStyle(color: Colors.white),),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  new Expanded(
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.directions_run,
+                        color: Colors.white,
+                      ),
+                      title: new Text(
+                        getTodayDate(),
+                        style: new TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  loadingInfo
+                      ? Container(
+                          width: 24.0,
+                          height: 24.0,
+                          child: new CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                          ),
+                        )
+                      : Padding(
+                          padding: EdgeInsets.all(0.0),
+                        ),
+                  Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: trainStatus == 'finished'
+                          ? new Icon(Icons.beenhere)
+                          : null)
+                ],
+              ),
+              Padding(
+                  padding: EdgeInsets.only(
+                      left: 64.0, top: 8.0, right: 0.0, bottom: 8.0),
+                  child: _buildTrainListView()),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: FlatButton(
+                        child: new Text('Concluído',
+                            style: new TextStyle(color: Colors.white)),
+                        onPressed: trainStatus == 'finished'
+                            ? null
+                            : _setTrainFinished,
+                      ),
+                    ),
+                    Expanded(
+                      child: FlatButton(
+                          onPressed: _goTrainPage,
+                          child: trainStatus == 'finished'
+                              ? new Text('Refazer',
+                                  style: new TextStyle(color: Colors.white))
+                              : new Text('Iniciar',
+                                  style: new TextStyle(color: Colors.white))),
+                    )
+                  ],
                 ),
               ),
-              loadingInfo ? Container(
-                width: 24.0,
-                height: 24.0,
-                child: new CircularProgressIndicator(
-                  strokeWidth: 2.0,
-                ),
-              ) : 
+            ],
+          )),
+    );
+
+    Widget progressIndicator = Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: new Card(
+        color: constants.primaryColor,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(0.0),
+                padding: const EdgeInsets.all(8.0),
+                child: new Text(
+                  'Completou ${getTrainProgress()['finished']} de ${getTrainProgress()['total']} treinos',
+                  style: new TextStyle(color: Colors.white),
+                ),
               ),
               Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: trainStatus == 'finished'
-                      ? new Icon(Icons.beenhere)
-                      : null)
+                padding: const EdgeInsets.all(8.0),
+                child: new LinearProgressIndicator(
+                  value: getTrainProgress()['ratio'],
+                  backgroundColor: Colors.white,
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.green),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: new Text(
+                  '${percentageFormatter.format(getTrainProgress()['ratio'] * 100)}%',
+                  style: new TextStyle(color: Colors.white),
+                ),
+              ),
             ],
           ),
-          Padding(
-              padding: EdgeInsets.only(
-                  left: 64.0, top: 8.0, right: 0.0, bottom: 8.0),
-              child: _buildTrainListView()),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: FlatButton(
-                    child: new Text('Concluído', style: new TextStyle(color: Colors.white)),
-                    onPressed:
-                        trainStatus == 'finished' ? null : _setTrainFinished,
-                  ),
-                ),
-                Expanded(
-                  child: FlatButton(
-                      onPressed: _goTrainPage,
-                      child: trainStatus == 'finished'
-                          ? new Text('Refazer', style: new TextStyle(color: Colors.white))
-                          : new Text('Iniciar', style: new TextStyle(color: Colors.white))),
-                )
-              ],
-            ),
-          ),
-        ],
-      )),
+        ),
+      ),
     );
-    return todayTrain;
+
+    Widget motivationalText = Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: new Card(
+        color: constants.primaryColor,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: new Text(
+            '“Um campeão tem medo de perder. Todo o resto têm medo de vencer.” – Billie Jean King, tenista',
+            style: new TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+    );
+
+    return Column(
+      children: <Widget>[todayTrain, progressIndicator, motivationalText],
+    );
   }
 
   void _showDialog() {
@@ -197,8 +279,10 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text('Concluir treino?', style: new TextStyle(color: constants.primaryColor)),
-            content: new Text('Dejesa marcar o treino como concluido?', style: new TextStyle(color: constants.primaryColor)),
+            title: new Text('Concluir treino?',
+                style: new TextStyle(color: constants.primaryColor)),
+            content: new Text('Dejesa marcar o treino como concluido?',
+                style: new TextStyle(color: constants.primaryColor)),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
@@ -231,12 +315,12 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
     }
   }
 
-
   Widget _buildTrainListView() {
     if (trainArray.length == 0) {
       return Container(
         height: 40.0,
-        child: Text('Nenhum treino para hoje', style: new TextStyle(color: Colors.white)),
+        child: Text('Nenhum treino para hoje',
+            style: new TextStyle(color: Colors.white)),
       );
     }
 
@@ -246,10 +330,12 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
         itemBuilder: (BuildContext context, int index) {
           if (trainArray[dayIndex].steps[index].speed == 0) {
             return Text(
-                '${trainArray[dayIndex].steps[index].time / 60}  minutos de descanso', style: new TextStyle(color: Colors.white));
+                '${trainArray[dayIndex].steps[index].time / 60}  minutos de descanso',
+                style: new TextStyle(color: Colors.white));
           }
           return Text(
-              '${trainArray[dayIndex].steps[index].time / 60}  minutos na velocidade  ${trainArray[dayIndex].steps[index].speed}', style: new TextStyle(color: Colors.white));
+              '${trainArray[dayIndex].steps[index].time / 60}  minutos na velocidade  ${trainArray[dayIndex].steps[index].speed}',
+              style: new TextStyle(color: Colors.white));
         },
         itemCount: trainArray[dayIndex].steps.length,
       ),
@@ -262,14 +348,12 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
 
   void _goTrainPage() {
     if (trainArray.length != 0) {
-//      Navigator.of(context).push(new PageRouteBuilder(
-//        pageBuilder: (_, __, ___) =>
-//            new TrainPage({'trains': trainArray, 'day': dayIndex}),
-//      ));
+
       Navigator.push(
         context,
         CupertinoPageRoute(
-            builder: (context) => new TrainPage({'trains': trainArray, 'day': dayIndex})),
+            builder: (context) =>
+                new TrainPage(trainArray[dayIndex].steps, dayIndex)),
       );
     }
     return null;
@@ -284,140 +368,11 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
     FirebaseService.concludeATrain(dayIndex);
   }
 
-//  void fetchInfoFromFirebase() {
-//    setState(() {
-//      loadingInfo = true;
-//    });
-//    widget.getUser().then((response) {
-//      widget.configureFirebaseApp().then((response) {
-//        DatabaseReference _evaluationRef = FirebaseDatabase.instance
-//            .reference()
-//            .child('trains')
-//            .child(widget.user.uid)
-//            .child('status');
-//
-//        _evaluationRef.once().then((DataSnapshot snapshot) {
-//          evaluationStatus = snapshot.value;
-//          if (evaluationStatus != 'progress') {
-//            _goTutorialPage();
-//          }
-//        })
-//            .timeout(Duration(seconds: 20))
-//            .catchError((error) {
-//          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-//          setState(() {
-//            loadingInfo = false;
-//          });
-//        });
-//        _evaluationRef.keepSynced(true);
-//
-//        final FirebaseDatabase database = new FirebaseDatabase(app: widget.app);
-//
-//        _trainRef = database
-//            .reference()
-//            .child('trains')
-//            .child(widget.user.uid)
-//            .child('treinos');
-//
-//        _trainRef
-//            .orderByChild('finished')
-//            .equalTo(f.format(new DateTime.now()))
-////            .onValue
-////            .listen((Event event) {
-//            .once()
-//            .then((DataSnapshot snapshot) {
-//          if (snapshot.value != null) {
-//            setState(() {
-//              loadingInfo = false;
-//              trainStatus = 'finished';
-//              trainArray = new List();
-//              for (var key in snapshot.value.keys) {
-//                dayIndex = key;
-//                for (int i = 0; i < snapshot.value[key].length - 1; i++) {
-//                  trainArray.add(snapshot.value[key][i.toString()]);
-//                }
-//              }
-//            });
-//          } else {
-//            _trainRef
-//                .orderByChild('finished')
-//                .equalTo(null)
-//                .limitToFirst(1)
-////                .onValue
-////                .listen((Event event) {
-////              setState(() {
-////                trainArray = new List();
-////                if (event.snapshot.value.keys != null) {
-////                  for (var key in event.snapshot.value.keys) {
-////                    dayIndex = key;
-////                    for (var train in event.snapshot.value[key]) {
-////                      trainArray.add(train);
-////                    }
-////                  }
-////                } else {
-////                  print(event.snapshot.key);
-////                  for (var key in event.snapshot.value) {
-////                    dayIndex = '0';
-////                    for (var train in key) {
-////                      trainArray.add(train);
-////                    }
-////                  }
-////                }
-////              });
-////            });
-//                .once()
-//                .then((DataSnapshot snapshot) {
-//              setState(() {
-//                loadingInfo = false;
-//                trainArray = new List();
-//                if (snapshot.value.keys != null) {
-//                  for (var key in snapshot.value.keys) {
-//                    dayIndex = key;
-//                    for (var train in snapshot.value[key]) {
-//                      trainArray.add(train);
-//                    }
-//                  }
-//                } else {
-//                  print(snapshot.key);
-//                  for (var key in snapshot.value) {
-//                    dayIndex = '0';
-//                    for (var train in key) {
-//                      trainArray.add(train);
-//                    }
-//                  }
-//                }
-//              });
-//            })
-//                .catchError((error) {
-//              Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-//            });
-//          }
-//          _trainRef.keepSynced(true);
-//        })
-//            .catchError((error) {
-//          Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-//        });
-//
-////        _trainRef.once().then((DataSnapshot snapshot) {
-////          print('LOGANDO: Connected to second database and read ${snapshot
-////              .value}');
-////        _trainRef.onValue.listen((Event event) {
-////          setState(() {
-////            trainArray = [];
-////            trainStatus = event.snapshot.value['status'];
-////            for (int i = 0; i < (event.snapshot.value['treino']).length; i++) {
-////              if (event.snapshot.value['treino'][i] != null) {
-////                print(trainArray.length);
-////                trainArray.add(event.snapshot.value['treino'][i]);
-////              }
-////            }
-////          });
-////        });
-//      }).catchError((error)  {
-//        Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-//      });
-//    }).catchError((error) {
-//      Scaffold.of(context).showSnackBar(failedConexionSnackbar);
-//    });
-//  }
+  getTrainProgress() {
+    return {
+      'total': trainArray.length,
+      'finished': completedTrains.length,
+      'ratio': completedTrains.length.toDouble() / trainArray.length.toDouble()
+    };
+  }
 }

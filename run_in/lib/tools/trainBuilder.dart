@@ -263,7 +263,7 @@ class TrainBuilder {
 
 //    train = new List(plan.length);
     train = Map();
-    int dayCounter = 2;
+    int dayCounter = 0;
     int timeCounter;
     for (var day in plan) {
       timeCounter = 0;
