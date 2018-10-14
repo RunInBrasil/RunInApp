@@ -36,7 +36,7 @@ class FifthPage extends StatelessWidget{
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Parabéns!!!',
-                        style: TextStyle(fontSize: 24.0),
+                        style: TextStyle(fontSize: 24.0, color: Colors.white),
                       ),
                     ),
                   ),
@@ -47,7 +47,7 @@ class FifthPage extends StatelessWidget{
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Você mandou muiito bem!!! Agora nos temos as informações que precisavamos, agora vamos criar um treino especial para você, se quiser, já pode iniciar hoje.',
-                        style: TextStyle(fontSize: 16.0),
+                        style: TextStyle(fontSize: 16.0, color: Colors.white),
                       ),
                     ),
                   ),

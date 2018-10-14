@@ -34,10 +34,10 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       theme: ThemeData(
         textTheme: Theme.of(context).textTheme.apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white
+          bodyColor: constants.primaryColor,
+          displayColor: Colors.white,
         ),
-        primaryColor: Colors.white
+        primaryColor: constants.primaryColor
       ),
       home: new MainPageFrame(),
       routes: routes,

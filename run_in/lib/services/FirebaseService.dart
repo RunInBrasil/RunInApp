@@ -210,6 +210,7 @@ void getTrainInfo() async {
       if (trainKey['finished'] != null) {
         train.finished = trainKey['finished'];
       }
+      train.index = snapshot.value.indexOf(trainKey);
       for (var step in trainKey['train']) {
         TrainStep trainStep = new TrainStep(trainKey['train'].indexOf(step),
             step['speed'].toDouble(),
@@ -239,6 +240,7 @@ void getTrainInfo() async {
         if (trainKey['finished'] != null) {
           train.finished = trainKey['finished'];
         }
+        train.index = event.snapshot.value.indexOf(trainKey);
         for (var step in trainKey['train']) {
           TrainStep trainStep = new TrainStep(trainKey['train'].indexOf(step),
               step['speed'].toDouble(),
@@ -250,6 +252,10 @@ void getTrainInfo() async {
     }
     _store.set(_store.TRAIN_ARRAY_KEY, trains);
   });
+}
+
+void concludeATrain(int index) {
+  _trainRef.child('${index}').child('finished').set(new DateTime.now().toIso8601String().substring(0, 10));
 }
 
 Future<bool> isAuthenticated() async {

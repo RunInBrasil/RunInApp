@@ -38,7 +38,7 @@ class ThirdPage extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Mas antes...',
-                        style: TextStyle(fontSize: 24.0),
+                        style: TextStyle(fontSize: 24.0, color: Colors.white),
                       ),
                     ),
                   ),
@@ -49,7 +49,7 @@ class ThirdPage extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Nos diga quantas vezes você consegue treinar por semana.',
-                        style: TextStyle(fontSize: 16.0),
+                        style: TextStyle(fontSize: 16.0, color: Colors.white),
                       ),
                     ),
                   ),

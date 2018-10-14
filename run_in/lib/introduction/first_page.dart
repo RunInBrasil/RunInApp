@@ -48,13 +48,13 @@ class FirstPage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                       child: new Text(getTitle(),
-                      style: Theme.of(context).copyWith().textTheme.title),
+                          style: new TextStyle(color: Colors.white, fontSize: 20.0)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
                       child: new Container(
                         child: new Text(constants.firstPageText,
-                          style: new TextStyle(fontSize: 16.0),),
+                          style: new TextStyle(fontSize: 16.0, color: Colors.white),),
                       ),
                     ),
                   ],

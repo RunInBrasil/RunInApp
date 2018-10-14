@@ -6,20 +6,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:run_in/login.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
-import 'package:run_in/tools/trainBuilder.dart';
+import 'package:run_in/objects/Train.dart';
 import 'package:run_in/train.dart';
 import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 import 'package:run_in/utils/GlobalState.dart';
+import 'package:run_in/utils/constants.dart' as constants;
 
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final failedConexionSnackbar = SnackBar(content: Text('Erro ao atualizar informações, verifique sua conexão'));
 
+final String backgroundImagePath = "assets/images/prepare_to_run.png";
 
 const List<Text> menuItems = <Text>[
   const Text("Sair"),
@@ -31,30 +31,38 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     baseContext = context;
-    _checkIfLogged(context);
-    return new Scaffold(
-        appBar: new AppBar(
-          title: Text('RunIn'),
-          actions: <Widget>[
-            new PopupMenuButton(
-              itemBuilder: (BuildContext context) {
-                return menuItems.map((Text item) {
-                  return new PopupMenuItem(
-                    value: item.data,
-                    child: item,
-                  );
-                }).toList();
-              },
-              onSelected: _handleMenuAction,
-            )
-          ],
-        ),
-        body: Column(
-              children: <Widget>[
-                new HomePageFrame(),
-                Spacer(),
-              ],
-            ));
+    return new Container(
+      decoration: new BoxDecoration(
+          image: new DecorationImage(image: new AssetImage(
+              backgroundImagePath),
+              fit: BoxFit.cover)
+      ),
+      child: new Scaffold(
+        backgroundColor: Colors.transparent,
+          appBar: new AppBar(
+            title: Text('RunIn'),
+            backgroundColor: Colors.transparent,
+            actions: <Widget>[
+              new PopupMenuButton(
+                itemBuilder: (BuildContext context) {
+                  return menuItems.map((Text item) {
+                    return new PopupMenuItem(
+                      value: item.data,
+                      child: item,
+                    );
+                  }).toList();
+                },
+                onSelected: _handleMenuAction,
+              )
+            ],
+          ),
+          body: Column(
+                  children: <Widget>[
+                    new HomePageFrame(),
+                    Spacer(),
+                  ],
+                ),),
+    );
   }
 
   void _handleMenuAction(String value) {
@@ -71,14 +79,6 @@ class HomePage extends StatelessWidget {
           .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
     });
   }
-
-  void _checkIfLogged(BuildContext context) async {
-    if (await _auth.currentUser() != null) {
-      return;
-    }
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
-  }
 }
 
 class HomePageFrame extends StatefulWidget {
@@ -94,8 +94,7 @@ class HomePageFrame extends StatefulWidget {
 class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserver {
   var trainArray = [];
   DatabaseReference _trainRef;
-  String evaluationStatus;
-  String dayIndex;
+  int dayIndex;
   String today;
 
   bool loadingInfo = false;
@@ -111,12 +110,19 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
     _store = GlobalState.instance;
     final f = new DateFormat('yyyy-MM-dd');
     today = f.format(new DateTime.now());
-    dayIndex = _store.get(FirebaseService.DayIndexKey);
-    trainArray = _store.get(FirebaseService.TrainArrayKey);
-    evaluationStatus = _store.get(FirebaseService.TrainStatusKey);
-    _trainRef = _store.get(FirebaseService.TrainRefKey);
+    trainArray = _store.get(_store.TRAIN_ARRAY_KEY);
 
-    print(dayIndex);
+    for(Train train in trainArray) {
+      if (train.finished == new DateTime.now().toIso8601String().substring(0, 10)) {
+        dayIndex = train.index;
+        trainStatus = 'finished';
+        break;
+      }
+      if (train.finished == null) {
+        dayIndex = train.index;
+        break;
+      }
+    }
   }
 
   @override
@@ -124,7 +130,7 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
     var todayTrain = Padding(
       padding: const EdgeInsets.all(8.0),
       child: new Card(
-        color: Color(0xAA000000),
+        color: constants.primaryColor,
           child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -134,8 +140,8 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
             children: <Widget>[
               new Expanded(
                 child: ListTile(
-                  leading: const Icon(Icons.directions_run),
-                  title: new Text(getTodayDate()),
+                  leading: const Icon(Icons.directions_run, color: Colors.white,),
+                  title: new Text(getTodayDate(), style: new TextStyle(color: Colors.white),),
                 ),
               ),
               loadingInfo ? Container(
@@ -165,7 +171,7 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
               children: <Widget>[
                 Expanded(
                   child: FlatButton(
-                    child: const Text('Concluído'),
+                    child: new Text('Concluído', style: new TextStyle(color: Colors.white)),
                     onPressed:
                         trainStatus == 'finished' ? null : _setTrainFinished,
                   ),
@@ -174,8 +180,8 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
                   child: FlatButton(
                       onPressed: _goTrainPage,
                       child: trainStatus == 'finished'
-                          ? const Text('Refazer')
-                          : const Text('Iniciar')),
+                          ? new Text('Refazer', style: new TextStyle(color: Colors.white))
+                          : new Text('Iniciar', style: new TextStyle(color: Colors.white))),
                 )
               ],
             ),
@@ -191,8 +197,8 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: new Text('Concluir treino?'),
-            content: new Text('Dejesa marcar o treino como concluido?'),
+            title: new Text('Concluir treino?', style: new TextStyle(color: constants.primaryColor)),
+            content: new Text('Dejesa marcar o treino como concluido?', style: new TextStyle(color: constants.primaryColor)),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
@@ -201,7 +207,7 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
                   child: new Text('Cancelar')),
               new FlatButton(
                   onPressed: () {
-                    _trainRef.child(dayIndex).child('finished').set(today);
+                    concludeTrain();
                     setState(() {
                       trainStatus = 'finished';
                     });
@@ -230,22 +236,22 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
     if (trainArray.length == 0) {
       return Container(
         height: 40.0,
-        child: Text('Nenhum treino para hoje'),
+        child: Text('Nenhum treino para hoje', style: new TextStyle(color: Colors.white)),
       );
     }
 
     return Container(
-      height: trainArray.length * 20.0,
+      height: trainArray[dayIndex].steps.length * 20.0,
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
-          if (trainArray[index]['speed'] == 0) {
+          if (trainArray[dayIndex].steps[index].speed == 0) {
             return Text(
-                '${trainArray[index]['time'] / 60}  minutos de descanso');
+                '${trainArray[dayIndex].steps[index].time / 60}  minutos de descanso', style: new TextStyle(color: Colors.white));
           }
           return Text(
-              '${trainArray[index]['time'] / 60}  minutos na velocidade  ${trainArray[index]['speed']}');
+              '${trainArray[dayIndex].steps[index].time / 60}  minutos na velocidade  ${trainArray[dayIndex].steps[index].speed}', style: new TextStyle(color: Colors.white));
         },
-        itemCount: trainArray.length,
+        itemCount: trainArray[dayIndex].steps.length,
       ),
     );
   }
@@ -272,6 +278,10 @@ class _HomePageFrameState extends State<HomePageFrame> with WidgetsBindingObserv
   void _goTutorialPage() {
     Navigator.of(context).pushNamed('/tutorial');
     return null;
+  }
+
+  void concludeTrain() {
+    FirebaseService.concludeATrain(dayIndex);
   }
 
 //  void fetchInfoFromFirebase() {

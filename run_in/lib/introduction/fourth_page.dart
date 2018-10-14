@@ -158,7 +158,7 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       child: Center(
         child: new Text(
           _getRemainTime(),
-          style: TextStyle(fontSize: 32.0),
+          style: TextStyle(fontSize: 32.0, color: Colors.white),
         ),
       ),
     );
@@ -275,34 +275,34 @@ class _FourthPageFrameState extends State<FourthPageFrame>
           if (timePassed == 0) {
             return new Text(
               'Ótimo treino',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 20.0, color: Colors.white),
             );
           }
           return new Text(
             'Estamos acabando',
-            style: TextStyle(fontSize: 20.0),
+            style: TextStyle(fontSize: 20.0, color: Colors.white),
           );
         }
         return new Text(
           'Preparar para a proxima velocidade...',
-          style: TextStyle(fontSize: 20.0),
+          style: TextStyle(fontSize: 20.0, color: Colors.white),
         );
       }
       return new Text(
         '${actualStep + 1}o Round',
-        style: TextStyle(fontSize: 24.0),
+        style: TextStyle(fontSize: 24.0, color: Colors.white),
       );
     }
     if (!trainStarted &&
         (actualStep != 0 || timePassed != trainArray[actualStep]['time'])) {
       return new Text(
         'Vamos lá, continue...',
-        style: TextStyle(fontSize: 24.0),
+        style: TextStyle(fontSize: 24.0, color: Colors.white),
       );
     }
     return new Text(
       'Vamos comecar da velocidade 4, quando estiver pronto coloque a esteira nessa velocidade e aperte o botão iniciar',
-      style: TextStyle(fontSize: 16.0),
+      style: TextStyle(fontSize: 16.0, color: Colors.white),
     );
   }
 
@@ -356,15 +356,15 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       return [
         new Text(
           'Próxima velocidade...',
-          style: new TextStyle(fontSize: 16.0),
+          style: new TextStyle(fontSize: 16.0, color: Colors.white),
         ),
         new Text(
           '${trainArray[actualStep + 1]['speed']}',
-          style: new TextStyle(fontSize: 96.0),
+          style: new TextStyle(fontSize: 96.0, color: Colors.white),
         ),
         new Text(
           'Km/h',
-          style: new TextStyle(fontSize: 16.0),
+          style: new TextStyle(fontSize: 16.0, color: Colors.white),
         )
       ];
     }
@@ -372,11 +372,11 @@ class _FourthPageFrameState extends State<FourthPageFrame>
     return [
       new Text(
         '${trainArray[actualStep]['speed']}',
-        style: new TextStyle(fontSize: 96.0),
+        style: new TextStyle(fontSize: 96.0, color: Colors.white),
       ),
       new Text(
         'Km/h',
-        style: new TextStyle(fontSize: 16.0),
+        style: new TextStyle(fontSize: 16.0, color: Colors.white),
       )
     ];
   }

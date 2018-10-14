@@ -41,7 +41,7 @@ class SecondPage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
                       child: new Text('Conte-nos sobre você',
-                          style: Theme.of(context).copyWith().textTheme.title),
+                          style: new TextStyle(color: Colors.white, fontSize: 20.0)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(32.0),
