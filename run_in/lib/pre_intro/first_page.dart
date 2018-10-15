@@ -61,7 +61,6 @@ class FirstPage extends StatelessWidget {
                 ),
               ),
             ),
-            new Spacer(),
           ],
         ),
       ),

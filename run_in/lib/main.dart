@@ -14,6 +14,8 @@ import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 import 'package:run_in/utils/GlobalState.dart';
 import 'package:run_in/utils/constants.dart' as constants;
 
+final String logoPath = 'assets/images/logo_wide.jpg';
+
 
 final routes = <String, WidgetBuilder> {
   '/main': (BuildContext context) => new MyApp(),
@@ -68,7 +70,12 @@ class _MainPageFrameState extends State<MainPageFrame> {
   @override
   Widget build(BuildContext context) {
     return new Center(
-      child: new Text(_store.get(FirebaseService.TrainStatusKey) == null ? 'Nada' : _store.get(FirebaseService.TrainStatusKey)),
+      child: new Container(
+        decoration: new BoxDecoration(
+          image: new DecorationImage(
+              image: new AssetImage(logoPath))
+        ),
+      ),
     );
   }
 
