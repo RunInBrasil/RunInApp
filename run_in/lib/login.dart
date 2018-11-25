@@ -4,12 +4,9 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn _googleSignIn = new GoogleSignIn();
 
 final String passwordInvalid =
     'PlatformException(exception, The password is invalid or the user does not have a password., null)';
@@ -22,7 +19,11 @@ SnackBar(content: Text('Este usuário já esta cadastrado'));
 final errorOnRetrieveEvaluation =
 SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
 
-final buttonColor = Color(0x99000000);
+final String logoPath = 'assets/images/logo_transparent.png';
+final String background = 'assets/images/login_background.jpg';
+
+//final buttonColor = Color(0x99000000);
+final buttonColor = Colors.white;
 
 class LoginPage extends StatelessWidget {
   @override
@@ -31,11 +32,12 @@ class LoginPage extends StatelessWidget {
 //        appBar: new AppBar(
 //          title: Text('RunIn'),
 //        ),
-        body: Container(
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage("assets/images/lacing-shoes.jpg"),
-                    fit: BoxFit.cover)),
+        body: new Container(
+          decoration: new BoxDecoration(
+            image: new DecorationImage(
+                image: new AssetImage(background),
+            fit: BoxFit.cover)
+          ),
             child: new LoginPageFrame()));
   }
 }
@@ -46,27 +48,9 @@ class LoginPageFrame extends StatefulWidget {
 
   @override
   _LoginPageState createState() {
-    configureFirebaseApp();
     return new _LoginPageState();
   }
 
-  Future configureFirebaseApp() async {
-    app = await FirebaseApp.configure(
-      options: Platform.isIOS
-          ? const FirebaseOptions(
-        googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
-        gcmSenderID: '808188414561',
-        apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
-        projectID: 'runin-d30a7',
-        databaseURL: 'https://runin-d30a7.firebaseio.com',
-      )
-          : const FirebaseOptions(
-        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-        databaseURL: 'https://runin-d30a7.firebaseio.com',
-      ),
-    );
-  }
 }
 
 class _LoginPageState extends State<LoginPageFrame> {
@@ -74,6 +58,7 @@ class _LoginPageState extends State<LoginPageFrame> {
   var toRegister = false;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final nameController = TextEditingController();
   final loading = false;
 
   @override
@@ -83,24 +68,32 @@ class _LoginPageState extends State<LoginPageFrame> {
     super.dispose();
   }
 
+
+  @override
+  void initState() {
+    FirebaseService.getInitialInfo();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!toRegister) {
       return new Center(
         child: Padding(
           padding: const EdgeInsets.only(left: 32.0, right: 32.0, top: 0.0),
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: new ListView(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(32.0),
                 child: Container(
                   height: 158.0,
                   decoration: new BoxDecoration(
+                    color: Colors.transparent,
                       image: new DecorationImage(
                           image: new AssetImage(
-                              "assets/images/logo.png"),
+                              logoPath),
                           fit: BoxFit.scaleDown)),
                 ),
               ),
@@ -194,25 +187,25 @@ class _LoginPageState extends State<LoginPageFrame> {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: new RaisedButton(
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(32.0),
-                  ),
-                  onPressed: _signInGoogle,
-                  child: ListTile(
-//                    leading: const Icon(Icons.email),
-                    leading: const Image(
-                      image: AssetImage('assets/icons/google_icon.png'),
-                      height: 24.0,
-                    ),
-
-                    title: const Text('Entrar com Google'),
-                  ),
-                  color: buttonColor,
-                ),
-              ),
+//              Padding(
+//                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+//                child: new RaisedButton(
+//                  shape: new RoundedRectangleBorder(
+//                    borderRadius: new BorderRadius.circular(32.0),
+//                  ),
+//                  onPressed: _signInGoogle,
+//                  child: ListTile(
+////                    leading: const Icon(Icons.email),
+//                    leading: const Image(
+//                      image: AssetImage('assets/icons/google_icon.png'),
+//                      height: 24.0,
+//                    ),
+//
+//                    title: const Text('Entrar com Google'),
+//                  ),
+//                  color: buttonColor,
+//                ),
+//              ),
             ],
           ),
         ),
@@ -221,22 +214,22 @@ class _LoginPageState extends State<LoginPageFrame> {
       return new Center(
         child: Padding(
           padding: const EdgeInsets.only(
-              left: 64.0, right: 64.0, top: 21.0, bottom: 32.0),
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+              left: 64.0, right: 64.0),
+          child: new ListView(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Spacer(),
               Padding(
-                padding: const EdgeInsets.all(32.0),
+                padding: const EdgeInsets.all(16.0),
                   child: BackdropFilter(filter: new ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
                   child: Container(
                     height: 158.0,
                     width: 400.0,
                     decoration: new BoxDecoration(
+                      shape: BoxShape.circle,
                         image: new DecorationImage(
                             image: new AssetImage(
-                                "assets/images/logo.png"),
+                                logoPath),
                             fit: BoxFit.contain)),
                   ),
                 ),
@@ -285,6 +278,27 @@ class _LoginPageState extends State<LoginPageFrame> {
                 ),
               ),
               Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Container(
+                  decoration: new BoxDecoration(
+                      borderRadius:
+                      new BorderRadius.all(new Radius.circular(32.0)),
+                      color: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: new TextFormField(
+                      style: new TextStyle(color: Colors.black),
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        labelText: 'Nome',
+                        labelStyle: new TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.fromLTRB(32.0, 8.0, 32.0, 8.0),
                 child: new RaisedButton(
                   shape: new RoundedRectangleBorder(
@@ -316,23 +330,23 @@ class _LoginPageState extends State<LoginPageFrame> {
                   color: buttonColor,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: new RaisedButton(
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(32.0),
-                  ),
-                  onPressed: _signInGoogle,
-                  child: ListTile(
-                    leading: const Image(
-                      image: AssetImage('assets/icons/google_icon.png'),
-                      height: 24.0,
-                    ),
-                    title: const Text('Entrar com Google'),
-                  ),
-                  color: buttonColor,
-                ),
-              ),
+//              Padding(
+//                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+//                child: new RaisedButton(
+//                  shape: new RoundedRectangleBorder(
+//                    borderRadius: new BorderRadius.circular(32.0),
+//                  ),
+//                  onPressed: _signInGoogle,
+//                  child: ListTile(
+//                    leading: const Image(
+//                      image: AssetImage('assets/icons/google_icon.png'),
+//                      height: 24.0,
+//                    ),
+//                    title: const Text('Entrar com Google'),
+//                  ),
+//                  color: buttonColor,
+//                ),
+//              ),
             ],
           ),
         ),
@@ -347,16 +361,8 @@ class _LoginPageState extends State<LoginPageFrame> {
     setState(() {});
     _showDialog();
     _signInWithGoogle().then((response) {
-      _getEvaluationStatus().then((response) {
-        Navigator.pop(context);
-        if (response == 'progress') {
-          _navigateToMainPage(context);
-        } else {
-          _navigateToTutorialPage(context);
-        }
-      }).catchError((onError) {
-        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
-      });
+      Navigator.pop(context);
+      _navigateNextPage();
     }).catchError((onError) {
       Navigator.pop(context);
     });
@@ -372,16 +378,8 @@ class _LoginPageState extends State<LoginPageFrame> {
     });
     _showDialog();
     _signInWithEmail().then((responseA) {
-      _getEvaluationStatus().then((responseB) {
-        Navigator.pop(context);
-        if (responseB == 'progress') {
-          _navigateToMainPage(context);
-        } else {
-          _navigateToTutorialPage(context);
-        }
-      }).catchError((onError) {
-        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
-      });
+      Navigator.pop(context);
+      _navigateNextPage();
     }).catchError((onError) {
       Navigator.pop(context);
       print('LOG: ');
@@ -395,16 +393,8 @@ class _LoginPageState extends State<LoginPageFrame> {
   void _registerEmail() {
     _showDialog();
     _registerWithEmail().then((response) {
-      _getEvaluationStatus().then((response) {
-        Navigator.pop(context);
-        if (response == 'progress') {
-          _navigateToMainPage(context);
-        } else {
-          _navigateToTutorialPage(context);
-        }
-      }).catchError((onError) {
-        Scaffold.of(context).showSnackBar(errorOnRetrieveEvaluation);
-      });
+      Navigator.pop(context);
+      _navigateNextPage();
     }).catchError((onError) {
       Navigator.pop(context);
       print(onError.hashCode);
@@ -416,37 +406,15 @@ class _LoginPageState extends State<LoginPageFrame> {
   }
 
   Future<String> _signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
-    final FirebaseUser user = await _auth.signInWithGoogle(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    assert(user.email != null);
-    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
-
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
-
-    return 'signInWithGoogle succeeded: $user';
+    await FirebaseService.signInWithGoogle();
   }
 
   Future<String> _signInWithEmail() async {
-    final FirebaseUser user = await _auth.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
-    assert(user.email != null);
-//    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
+    await FirebaseService.signInWithEmail(email, password);
 
-    return 'signInWithGoogle succeeded: $user';
   }
 
   Future<String> _registerWithEmail() async {
@@ -454,31 +422,17 @@ class _LoginPageState extends State<LoginPageFrame> {
     print('LOG: ${emailController.text}');
     print('LOG: ${passwordController.text}');
 
-    final FirebaseUser user = await _auth.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim());
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+    String name = nameController.text.trim();
 
-    assert(user.email != null);
-//    assert(user.displayName != null);
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
+    await FirebaseService.registerWithEmail(email, password, name);
 
-    final FirebaseUser currentUser = await _auth.currentUser();
-    assert(user.uid == currentUser.uid);
-
-    print("LOG: User registered in: $user");
-
-    return 'register succeeded: $user';
   }
 
   void _navigateToMainPage(BuildContext context) {
     Navigator.of(context)
-        .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-  }
-
-  void _navigateToTutorialPage(BuildContext context) {
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil('/tutorial', (Route<dynamic> route) => false);
+        .pushNamedAndRemoveUntil('/main', (Route<dynamic> route) => false);
   }
 
   void _showDialog() {
@@ -492,15 +446,9 @@ class _LoginPageState extends State<LoginPageFrame> {
         });
   }
 
-  Future<String> _getEvaluationStatus() async {
-    FirebaseUser user = await _auth.currentUser();
-    DatabaseReference _evaluationRef = FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid)
-        .child('status');
-
-    DataSnapshot snapshot = await _evaluationRef.once();
-    return snapshot.value;
+  void _navigateNextPage() async {
+    if (await FirebaseService.isAuthenticated()) {
+      _navigateToMainPage(context);
+    }
   }
 }

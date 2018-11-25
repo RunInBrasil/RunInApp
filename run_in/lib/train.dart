@@ -8,18 +8,25 @@ import 'package:intl/intl.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:run_in/objects/TrainStep.dart';
 import 'package:run_in/tools/circlePainter.dart';
 import 'package:countdown/countdown.dart';
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final backgroundColor = Color(0xCC000000);
+final String backgroundImagePath = "assets/images/prepare_to_run.jpg";
+
 
 class TrainPage extends StatelessWidget {
   BuildContext baseContext;
-  var trainArray;
+  List<TrainStep> trainArray;
+  int dayIndex;
 
-  TrainPage(var trainInfo) {
+  TrainPage(List<TrainStep> trainInfo, int day) {
     this.trainArray = trainInfo;
+    this.dayIndex = day;
   }
 
   @override
@@ -28,16 +35,16 @@ class TrainPage extends StatelessWidget {
       Navigator.of(baseContext).pushNamed('/home');
     }
     baseContext = context;
-    return new Scaffold(
-        body: Container(
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage(
-                        "assets/images/running-treadmill.jpg"),
-                    fit: BoxFit.cover)
-            ),
-            child: new TrainPageFrame(trainArray)
-        )
+    return new Container(
+      decoration: new BoxDecoration(
+          image: new DecorationImage(image: new AssetImage(backgroundImagePath),
+            fit: BoxFit.cover
+          )
+      ),
+      child: new Scaffold(
+        backgroundColor: Colors.transparent,
+          body: new TrainPageFrame(trainArray, dayIndex)
+          ),
     );
   }
 }
@@ -45,35 +52,18 @@ class TrainPage extends StatelessWidget {
 class TrainPageFrame extends StatefulWidget {
   FirebaseApp app;
   FirebaseUser user;
-  var trainArray = [];
-  String dayIndex;
+  List<TrainStep> trainArray;
+  int dayIndex;
 
-  TrainPageFrame(var trainArray) {
-    this.trainArray = trainArray['trains'];
-    this.dayIndex = trainArray['day'];
+  TrainPageFrame(List<TrainStep> trainArray, int day) {
+    this.trainArray = trainArray;
+    this.dayIndex = day;
   }
 
   @override
   _TrainPageFrameState createState() {
     return new _TrainPageFrameState();
   }
-
-//  Future configureFirebaseApp() async {
-//    app = await FirebaseApp.configure(
-//      name: 'db2',
-//      options: Platform.isIOS
-//          ? const FirebaseOptions(
-//        googleAppID: '1:808188414561:ios:7e6d93c2f42792e9',
-//        gcmSenderID: '808188414561',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      )
-//          : const FirebaseOptions(
-//        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-//        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      ),
-//    );
-//  }
 
   Future getUser() async {
     user = await _auth.currentUser();
@@ -82,7 +72,6 @@ class TrainPageFrame extends StatefulWidget {
 
 class _TrainPageFrameState extends State<TrainPageFrame>
     with TickerProviderStateMixin {
-  DatabaseReference _trainRef;
   var percentage = 0.0;
   double newPercentage = 0.0;
   AnimationController percentageAnimationController;
@@ -95,35 +84,9 @@ class _TrainPageFrameState extends State<TrainPageFrame>
 
   @override
   void initState() {
-    widget.getUser().then((response) async {
-//      final f = new DateFormat('yyyy-MM-dd');
-
-      _trainRef = FirebaseDatabase.instance
-          .reference()
-          .child('trains')
-          .child(widget.user.uid)
-          .child('treinos');
-
-//          .child(f.format(new DateTime.now()));
-//
-//      await _trainRef.once().then((DataSnapshot snapshot) {
-//        print('LOGANDO: Connected to second database and read ${snapshot
-//            .value}');
-//        setState(() {
-//          trainArray = snapshot.value['treino'];
-//          trainArray = [];
-//          for (int i = 0; i < (snapshot.value['treino']).length; i++) {
-//            if (snapshot.value['treino'][i] != null) {
-//              print(trainArray.length);
-//              trainArray.add(snapshot.value['treino'][i]);
-//            }
-//          }
-//        });
-//      });
-    });
 
     setState(() {
-      timePassed = widget.trainArray[actualStep]['time'];
+      timePassed = widget.trainArray[actualStep].time;
       percentage = 0.0;
     });
 
@@ -135,6 +98,13 @@ class _TrainPageFrameState extends State<TrainPageFrame>
               percentage, newPercentage, percentageAnimationController.value);
         });
       });
+  }
+
+
+  @override
+  void dispose() {
+    percentageAnimationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -162,18 +132,6 @@ class _TrainPageFrameState extends State<TrainPageFrame>
                       completePercent: percentage,
                       width: 4.0),
                   child: new Center(
-//                    child: RaisedButton(
-//                        color: Colors.transparent,
-//                        onPressed: () {
-//                          setState(() {
-//                            percentage = newPercentage;
-//                            newPercentage += 10;
-//                            if (newPercentage > 100.0) {
-//                              newPercentage = 0.0;
-//                            }
-//                            percentageAnimationController.forward(from: 0.0);
-//                          });
-//                        }),
                     child: new Column(
                       children: _getSpeedlabel(),
                     ),
@@ -191,7 +149,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
       child: Center(
         child: new Text(
           _getRemainTime(),
-          style: TextStyle(fontSize: 32.0),
+          style: TextStyle(fontSize: 32.0, color: Colors.white),
         ),
       ),
     );
@@ -243,8 +201,10 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     if (Platform.isIOS) {
       childs.insert(0, backButton);
     }
-    var screen = new Column(
-      children: childs,
+    var screen = new SingleChildScrollView(
+      child: new Column(
+        children: childs,
+      ),
     );
     return screen;
   }
@@ -268,37 +228,37 @@ class _TrainPageFrameState extends State<TrainPageFrame>
           if (timePassed == 0) {
             return new Text(
               'Ótimo treino',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 20.0, color: Colors.white),
             );
           }
           return new Text(
             'Estamos acabando',
-            style: TextStyle(fontSize: 20.0),
+            style: TextStyle(fontSize: 20.0, color: Colors.white),
           );
         }
         return new Text(
           'Preparar para a próxima velocidade...',
-          style: TextStyle(fontSize: 20.0),
+          style: TextStyle(fontSize: 20.0, color: Colors.white),
         );
       }
       return new Text(
         '${actualStep + 1}o Round',
-        style: TextStyle(fontSize: 24.0),
+        style: TextStyle(fontSize: 24.0, color: Colors.white),
       );
     }
 
     if (!trainStarted) {
       if (actualStep == 0 &&
-          widget.trainArray[actualStep]['time'] == timePassed) {
+          widget.trainArray[actualStep].time == timePassed) {
         return new Text(
           'Vamos começar...',
-          style: TextStyle(fontSize: 24.0),
+          style: TextStyle(fontSize: 24.0, color: Colors.white),
         );
       }
     }
     return new Text(
       'Vamos lá, continue...',
-      style: TextStyle(fontSize: 24.0),
+      style: TextStyle(fontSize: 24.0, color: Colors.white),
     );
   }
 
@@ -322,9 +282,9 @@ class _TrainPageFrameState extends State<TrainPageFrame>
               percentage = newPercentage;
               timePassed = d.inSeconds;
               newPercentage =
-                  (widget.trainArray[actualStep]['time'] - timePassed) *
+                  (widget.trainArray[actualStep].time - timePassed) *
                       100 /
-                      widget.trainArray[actualStep]['time'];
+                      widget.trainArray[actualStep].time;
               percentageAnimationController.forward(from: 0.0);
             });
           }
@@ -335,7 +295,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
           } else {
             actualStep++;
             setState(() {
-              timePassed = widget.trainArray[actualStep]['time'];
+              timePassed = widget.trainArray[actualStep].time;
               registerNewCountdown();
             });
           }
@@ -352,16 +312,16 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     if (timePassed <= 15 &&
         actualStep != widget.trainArray.length - 1 &&
         trainStarted) {
-      if (widget.trainArray[actualStep + 1]['speed'] == 0) {
+      if (widget.trainArray[actualStep + 1].speed == 0) {
         return [
           Spacer(),
           new Text(
             'Próxima passo...',
-            style: new TextStyle(fontSize: 16.0),
+            style: new TextStyle(fontSize: 16.0, color: Colors.white),
           ),
           new Text(
             'Descanso',
-            style: new TextStyle(fontSize: 48.0),
+            style: new TextStyle(fontSize: 48.0, color: Colors.white),
           ),
           Spacer()
         ];
@@ -370,15 +330,15 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         Spacer(),
         new Text(
           'Próxima velocidade...',
-          style: new TextStyle(fontSize: 16.0),
+          style: new TextStyle(fontSize: 16.0, color: Colors.white),
         ),
         new Text(
-          '${widget.trainArray[actualStep + 1]['speed']}',
-          style: new TextStyle(fontSize: 96.0),
+          '${widget.trainArray[actualStep + 1].speed}',
+          style: new TextStyle(fontSize: 96.0, color: Colors.white),
         ),
         new Text(
           'Km/h',
-          style: new TextStyle(fontSize: 16.0),
+          style: new TextStyle(fontSize: 16.0, color: Colors.white),
         ),
         Spacer()
       ];
@@ -387,12 +347,12 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     return [
       Spacer(),
       new Text(
-        '${widget.trainArray[actualStep]['speed']}',
-        style: new TextStyle(fontSize: 96.0),
+        '${widget.trainArray[actualStep].speed}',
+        style: new TextStyle(fontSize: 96.0, color: Colors.white),
       ),
       new Text(
         'Km/h',
-        style: new TextStyle(fontSize: 16.0),
+        style: new TextStyle(fontSize: 16.0, color: Colors.white),
       ),
       Spacer(),
     ];
@@ -406,9 +366,9 @@ class _TrainPageFrameState extends State<TrainPageFrame>
         setState(() {
           percentage = newPercentage;
           timePassed = d.inSeconds;
-          newPercentage = (widget.trainArray[actualStep]['time'] - timePassed) *
+          newPercentage = (widget.trainArray[actualStep].time - timePassed) *
               100 /
-              widget.trainArray[actualStep]['time'];
+              widget.trainArray[actualStep].time;
           percentageAnimationController.forward(from: 0.0);
         });
       }
@@ -419,7 +379,7 @@ class _TrainPageFrameState extends State<TrainPageFrame>
       } else {
         actualStep++;
         setState(() {
-          timePassed = widget.trainArray[actualStep]['time'];
+          timePassed = widget.trainArray[actualStep].time;
           registerNewCountdown();
         });
       }
@@ -427,8 +387,6 @@ class _TrainPageFrameState extends State<TrainPageFrame>
   }
 
   void _registerTrainFinished() {
-    final f = new DateFormat('yyyy-MM-dd');
-    _trainRef.child(widget.dayIndex).child('finished').set(
-        f.format(new DateTime.now()));
+    FirebaseService.concludeATrain(widget.dayIndex);
   }
 }

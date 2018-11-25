@@ -8,10 +8,16 @@ import 'package:intl/intl.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:run_in/objects/TrainMetadata.dart';
+import 'package:run_in/objects/User.dart';
 import 'package:run_in/tools/circlePainter.dart';
 import 'package:countdown/countdown.dart';
 import 'package:run_in/tools/myDivider.dart';
 import 'package:run_in/tools/trainBuilder.dart';
+import 'package:run_in/utils/GlobalState.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -27,7 +33,9 @@ class FourthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     baseContext = context;
-    return new Scaffold(body: new FourthPageFrame(_tabController));
+    return new Scaffold(
+      backgroundColor: Colors.transparent,
+        body: new FourthPageFrame(_tabController));
   }
 }
 
@@ -44,23 +52,6 @@ class FourthPageFrame extends StatefulWidget {
   _FourthPageFrameState createState() {
     return new _FourthPageFrameState();
   }
-
-//  Future configureFirebaseApp() async {
-//    app = await FirebaseApp.configure(
-//      name: 'db2',
-//      options: Platform.isIOS
-//          ? const FirebaseOptions(
-//        googleAppID: '1:808188414561:ios:7e6d93c2f42792e9',
-//        gcmSenderID: '808188414561',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      )
-//          : const FirebaseOptions(
-//        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-//        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      ),
-//    );
-//  }
 
   Future getUser() async {
     user = await _auth.currentUser();
@@ -79,15 +70,17 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   CountDown countDown;
   var sub;
   final formatter = new NumberFormat("##00");
-  int daysPerWeek;
+  TrainMetadata metadata;
+  User user;
+  GlobalState _store;
 
   @override
   void initState() {
+    _store = GlobalState.instance;
+    metadata = _store.get(_store.TRAIN_METADATA_KEY);
+    user = _store.get(_store.USER_KEY);
     trainArray = _buildPerfomanceTest();
     timePassed = trainArray[actualStep]['time'];
-
-    getDaysPerWeek();
-
     percentageAnimationController = new AnimationController(
         vsync: this, duration: new Duration(milliseconds: 10000))
       ..addListener(() {
@@ -98,21 +91,6 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       });
   }
 
-  getDaysPerWeek() async {
-    FirebaseUser user = await _auth.currentUser();
-    FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid)
-        .child('days_per_week')
-        .once()
-        .then((DataSnapshot snapshot) {
-          setState(() {
-            daysPerWeek = snapshot.value;
-          });
-    });
-  }
-
   @override
   void dispose() {
     percentageAnimationController.dispose();
@@ -121,11 +99,17 @@ class _FourthPageFrameState extends State<FourthPageFrame>
 
   List _buildPerfomanceTest() {
     var test = new List(18);
+    int startPoint;
+    if(user.gender == user.FEMININE) {
+      startPoint = 4;
+    } else {
+      startPoint = 5;
+    }
 
-    for (int i = 4; i < 18; i++) {
-      test[i - 4] = new Map();
-      test[i - 4]['speed'] = i;
-      test[i - 4]['time'] = 60;
+    for (int i = startPoint; i < 18; i++) {
+      test[i - startPoint] = new Map();
+      test[i - startPoint]['speed'] = i;
+      test[i - startPoint]['time'] = 60;
     }
 
     return test;
@@ -134,7 +118,7 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   @override
   Widget build(BuildContext context) {
     var roundClock = Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 32.0, 0.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
       child: Center(
         child: PhysicalModel(
           color: Colors.transparent,
@@ -143,10 +127,10 @@ class _FourthPageFrameState extends State<FourthPageFrame>
             child: BackdropFilter(
               filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: new Container(
-                width: 250.0,
-                height: 250.0,
+                width: 220.0,
+                height: 220.0,
                 decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.circular(150.0),
+                  borderRadius: new BorderRadius.circular(130.0),
                   color: Colors.transparent,
                 ),
                 child: new CustomPaint(
@@ -156,18 +140,6 @@ class _FourthPageFrameState extends State<FourthPageFrame>
                       completePercent: percentage,
                       width: 3.0),
                   child: new Center(
-//                    child: RaisedButton(
-//                        color: Colors.transparent,
-//                        onPressed: () {
-//                          setState(() {
-//                            percentage = newPercentage;
-//                            newPercentage += 10;
-//                            if (newPercentage > 100.0) {
-//                              newPercentage = 0.0;
-//                            }
-//                            percentageAnimationController.forward(from: 0.0);
-//                          });
-//                        }),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: _getSpeedlabel(),
@@ -186,7 +158,7 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       child: Center(
         child: new Text(
           _getRemainTime(),
-          style: TextStyle(fontSize: 32.0),
+          style: TextStyle(fontSize: 32.0, color: Colors.white),
         ),
       ),
     );
@@ -267,8 +239,19 @@ class _FourthPageFrameState extends State<FourthPageFrame>
         ),
       ),
     );
-    var screen = new Column(
-      children: <Widget>[roundClock, timer, label, playButton],
+    var screen = new Card(
+      shape: new RoundedRectangleBorder(
+        borderRadius: new BorderRadius.circular(32.0)
+      ),
+      color: constants.primaryColor,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: new Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[new Spacer(),roundClock, timer, label, playButton, new Spacer()],
+        ),
+      ),
     );
     return screen;
   }
@@ -292,34 +275,34 @@ class _FourthPageFrameState extends State<FourthPageFrame>
           if (timePassed == 0) {
             return new Text(
               'Ótimo treino',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 20.0, color: Colors.white),
             );
           }
           return new Text(
             'Estamos acabando',
-            style: TextStyle(fontSize: 20.0),
+            style: TextStyle(fontSize: 20.0, color: Colors.white),
           );
         }
         return new Text(
           'Preparar para a proxima velocidade...',
-          style: TextStyle(fontSize: 20.0),
+          style: TextStyle(fontSize: 20.0, color: Colors.white),
         );
       }
       return new Text(
         '${actualStep + 1}o Round',
-        style: TextStyle(fontSize: 24.0),
+        style: TextStyle(fontSize: 24.0, color: Colors.white),
       );
     }
     if (!trainStarted &&
         (actualStep != 0 || timePassed != trainArray[actualStep]['time'])) {
       return new Text(
         'Vamos lá, continue...',
-        style: TextStyle(fontSize: 24.0),
+        style: TextStyle(fontSize: 24.0, color: Colors.white),
       );
     }
     return new Text(
       'Vamos comecar da velocidade 4, quando estiver pronto coloque a esteira nessa velocidade e aperte o botão iniciar',
-      style: TextStyle(fontSize: 16.0),
+      style: TextStyle(fontSize: 16.0, color: Colors.white),
     );
   }
 
@@ -373,15 +356,15 @@ class _FourthPageFrameState extends State<FourthPageFrame>
       return [
         new Text(
           'Próxima velocidade...',
-          style: new TextStyle(fontSize: 16.0),
+          style: new TextStyle(fontSize: 16.0, color: Colors.white),
         ),
         new Text(
           '${trainArray[actualStep + 1]['speed']}',
-          style: new TextStyle(fontSize: 96.0),
+          style: new TextStyle(fontSize: 96.0, color: Colors.white),
         ),
         new Text(
           'Km/h',
-          style: new TextStyle(fontSize: 16.0),
+          style: new TextStyle(fontSize: 16.0, color: Colors.white),
         )
       ];
     }
@@ -389,11 +372,11 @@ class _FourthPageFrameState extends State<FourthPageFrame>
     return [
       new Text(
         '${trainArray[actualStep]['speed']}',
-        style: new TextStyle(fontSize: 96.0),
+        style: new TextStyle(fontSize: 96.0, color: Colors.white),
       ),
       new Text(
         'Km/h',
-        style: new TextStyle(fontSize: 16.0),
+        style: new TextStyle(fontSize: 16.0, color: Colors.white),
       )
     ];
   }
@@ -433,30 +416,19 @@ class _FourthPageFrameState extends State<FourthPageFrame>
   }
 
   Future saveUserEvaluation() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    DatabaseReference reference = FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid);
 
-    reference.child('status').set('progress');
-    reference.child('start_date').set(new DateTime.now());
-    reference.child('evaluation_speed').set(trainArray[actualStep]['speed']);
+    metadata.evaluationSpeed = trainArray[actualStep]['speed'];
+    metadata.status = 'progress';
+    metadata.startDate = new DateTime.now().toIso8601String();
 
-    if (daysPerWeek == null) {
-      await getDaysPerWeek();
-    }
+    FirebaseService.setTrainMetadata(metadata);
 
-    TrainBuilder builder = new TrainBuilder(daysPerWeek, trainArray[actualStep]['speed']);
+    TrainBuilder builder = new TrainBuilder(metadata.daysPerWeek, trainArray[actualStep]['speed']);
     builder.build();
     Map trains = builder.getTrain();
 
-    FirebaseDatabase.instance
-        .reference()
-        .child('trains')
-        .child(user.uid)
-        .child('treinos')
-        .set(trains);
+
+    FirebaseService.setTrain(trains);
 
 //    for (var train in  trains) {
 //      for (var trainDeep in train) {

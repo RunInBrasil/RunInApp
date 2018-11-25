@@ -263,13 +263,15 @@ class TrainBuilder {
 
 //    train = new List(plan.length);
     train = Map();
-    int dayCounter = 2;
+    int dayCounter = 0;
     int timeCounter;
     for (var day in plan) {
       timeCounter = 0;
       train[dayCounter.toString()] = new Map();
+      train[dayCounter.toString()]['train'] = new Map();
+//      train[dayCounter.toString()]['finished'] = '0';
       for (var time in  trainModel[day].time) {
-        train[dayCounter.toString()][timeCounter.toString()] = (new Train(trainModel[day].effort[timeCounter] * speedTest, time)).toJson();
+        train[dayCounter.toString()]['train'][timeCounter.toString()] = (new Train(trainModel[day].effort[timeCounter] * speedTest, time)).toJson();
         timeCounter++;
       }
       dayCounter++;

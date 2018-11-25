@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:run_in/tools/myDivider.dart';
 import 'package:run_in/tools/roundedOutlineButtom.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+
 
 class FifthPage extends StatelessWidget{
 
@@ -15,37 +17,50 @@ class FifthPage extends StatelessWidget{
   Widget build(BuildContext context) {
     this.context = context;
     return Material(
+      color: Colors.transparent,
       child: Column(
         children: <Widget>[
-          Container(
-            height: 64.0,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Parabéns!!!',
-                style: TextStyle(fontSize: 24.0),
+          new Spacer(),
+          new Card(
+            shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(32.0)
+            ),
+            color: constants.primaryColor,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: new Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Parabéns!!!',
+                        style: TextStyle(fontSize: 24.0, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  myDivider(),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Você mandou muiito bem!!! Agora nos temos as informações que precisavamos, agora vamos criar um treino especial para você, se quiser, já pode iniciar hoje.',
+                        style: TextStyle(fontSize: 16.0, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  myDivider(),
+                  myRoundedOutlineButtom(
+                      text: 'Continuar',
+                      onPressed: _navigateToMainPage
+                  ),
+                ],
               ),
             ),
           ),
-          myDivider(),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Você mandou muiito bem!!! Agora nos temos as informações que precisavamos, agora vamos criar um treino especial para você, se quiser, já pode iniciar hoje.',
-                style: TextStyle(fontSize: 16.0),
-              ),
-            ),
-          ),
-          myDivider(),
-          myRoundedOutlineButtom(
-              text: 'Continuar',
-              onPressed: _navigateToMainPage
-          ),
+          new Spacer()
         ],
       ),
     );
@@ -54,6 +69,6 @@ class FifthPage extends StatelessWidget{
   void _navigateToMainPage() {
     Navigator
         .of(context)
-        .pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+        .pushNamedAndRemoveUntil('/main', (Route<dynamic> route) => false);
   }
 }

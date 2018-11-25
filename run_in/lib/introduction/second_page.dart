@@ -1,101 +1,84 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:run_in/tools/circlePainter.dart';
-import 'package:run_in/tools/myDivider.dart';
+import 'package:run_in/objects/User.dart';
+import 'package:run_in/utils/constants.dart' as constants;
+import 'package:run_in/utils/GlobalState.dart';
+import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
+
+
 
 class SecondPage extends StatelessWidget {
   TabController _tabController;
+  GlobalState _store;
 
   SecondPage(TabController tabController) {
     this._tabController = tabController;
+    _store = GlobalState.instance;
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget roundClock = Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-      child: Center(
-        child: PhysicalModel(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: BackdropFilter(
-              filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: new Container(
-                width: 250.0,
-                height: 250.0,
-                decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.circular(150.0),
-                  color: Colors.transparent,
+    Widget view = Material(
+      color: Colors.transparent,
+      child: new Align(
+        alignment: FractionalOffset(0.0, 0.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            new Spacer(),
+            Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: new Card(
+                shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(32.0)
                 ),
-                child: new CustomPaint(
-                  foregroundPainter: new MyPainter(
-                      lineColor: Colors.transparent,
-                      completeColor: Colors.white,
-                      completePercent: 75.0,
-                      width: 3.0),
-                  child: new Center(
-//                    child: RaisedButton(
-//                        color: Colors.transparent,
-//                        onPressed: () {
-//                          setState(() {
-//                            percentage = newPercentage;
-//                            newPercentage += 10;
-//                            if (newPercentage > 100.0) {
-//                              newPercentage = 0.0;
-//                            }
-//                            percentageAnimationController.forward(from: 0.0);
-//                          });
-//                        }),
-                    child: new Text(
-                      '6',
-                      style: new TextStyle(fontSize: 128.0, color: Colors.white),
+                color: constants.primaryColor,
+                child: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+                      child: new Text('Conte-nos sobre você',
+                          style: new TextStyle(color: Colors.white, fontSize: 20.0)),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: new Container(
+                        child: new Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            new OutlineButton(onPressed:() => setGender('masculino'),
+                            child: new Text('Masculino',
+                            style: new TextStyle(color: Colors.white),),),
+                            new OutlineButton(onPressed:() => setGender('feminino'),
+                            child: new Text('Feminino',
+                              style: new TextStyle(color: Colors.white),),),
+                          ],
+                        )
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-
-    Widget timer = new Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Center(
-        child: new Text(
-          '00:37',
-          style: TextStyle(fontSize: 32.0, color: Colors.white),
-        ),
-      ),
-    );
-
-    Widget text = new Padding(
-      padding: EdgeInsets.all(0.0),
-      child: Column(
-        children: <Widget>[
-          myDivider(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-            child: Text(
-              'Vamos lá, as regras são simples: \n\n    - A velocidade que a esteira deve ficar esta indicada no número maior acima, no caso o número 6.\n    - A cada minuto a velocidade será aumentada em 1. \n    - Quando não aguentar mais correr, pare o treino e nos vamos desenvolver um plano de treinos especialmente para você.',
-              style: new TextStyle(color: Colors.white, fontSize: 17.0),
+            new Spacer(),
+            Padding(
+              padding: EdgeInsets.only(right: 16.0),
+              child: Divider(
+                height: 16.0,
+                color: Colors.white,
+                indent: 16.0,
+              ),
             ),
-          ),
-          myDivider()
-        ],
+          ],
+        ),
       ),
     );
 
-    Widget proceedButton = FlatButton(onPressed: nextPage, child: Text('Vamos lá'));
+    return view;
 
-    return new Scaffold(
-        body: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[roundClock, timer, text, proceedButton],
-    ));
   }
 
   nextPage() {
@@ -104,5 +87,12 @@ class SecondPage extends StatelessWidget {
       return;
     }
     _tabController.animateTo(newIndex);
+  }
+
+  setGender(String s) {
+    User user = _store.get(_store.USER_KEY);
+    user.gender = s;
+    FirebaseService.setUserInfo(user);
+    nextPage();
   }
 }
