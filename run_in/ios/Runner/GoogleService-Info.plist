@@ -7,9 +7,9 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>808188414561-cd4gdn0vdk0cffbmtus0n63mdrg2c42f.apps.googleusercontent.com</string>
+	<string>808188414561-n6lhrdbtni7jg7p253124c7mfefje6g1.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.808188414561-cd4gdn0vdk0cffbmtus0n63mdrg2c42f</string>
+	<string>com.googleusercontent.apps.808188414561-n6lhrdbtni7jg7p253124c7mfefje6g1</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCwGaWV_oh_fZkPFRB6H0zoHjoEyLtfPpo</string>
 	<key>GCM_SENDER_ID</key>
@@ -17,7 +17,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>runin.com.br</string>
+	<string>br.com.runin.runIn</string>
 	<key>PROJECT_ID</key>
 	<string>runin-d30a7</string>
 	<key>STORAGE_BUCKET</key>
@@ -33,7 +33,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:808188414561:ios:7e6d93c2f42792e9</string>
+	<string>1:808188414561:ios:a1f5c1e0a4427dd3</string>
 	<key>DATABASE_URL</key>
 	<string>https://runin-d30a7.firebaseio.com</string>
 </dict>

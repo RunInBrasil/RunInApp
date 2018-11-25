@@ -25,9 +25,11 @@ class MyApp extends StatelessWidget {
     // This widget is the root of your application.
     var destination;
     if (_auth.currentUser() != null) {
+      print('bbb');
       destination = HomePage();
 //      destination = Tutorial();
     } else {
+      print('ccc');
       destination = LoginPage();
 //      destination = Tutorial();
     }
