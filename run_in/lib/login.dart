@@ -46,26 +46,27 @@ class LoginPageFrame extends StatefulWidget {
 
   @override
   _LoginPageState createState() {
+    configureFirebaseApp();
     return new _LoginPageState();
   }
 
-//  Future configureFirebaseApp() async {
-//    app = await FirebaseApp.configure(
-//      options: Platform.isIOS
-//          ? const FirebaseOptions(
-//        googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
-//        gcmSenderID: '808188414561',
-//        apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
-//        projectID: 'runin-d30a7',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      )
-//          : const FirebaseOptions(
-//        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
-//        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
-//        databaseURL: 'https://runin-d30a7.firebaseio.com',
-//      ),
-//    );
-//  }
+  Future configureFirebaseApp() async {
+    app = await FirebaseApp.configure(
+      options: Platform.isIOS
+          ? const FirebaseOptions(
+        googleAppID: '1:808188414561:ios:a1f5c1e0a4427dd3',
+        gcmSenderID: '808188414561',
+        apiKey: 'AIzaSyCPVxFP42DTFixgO9mTDoTep_OW-LTIA18',
+        projectID: 'runin-d30a7',
+        databaseURL: 'https://runin-d30a7.firebaseio.com',
+      )
+          : const FirebaseOptions(
+        googleAppID: '1:808188414561:android:0354ca0c79b55f65',
+        apiKey: 'AIzaSyAAWl2MXOnpAUca6lly3wEru1ZoyCu3yFw',
+        databaseURL: 'https://runin-d30a7.firebaseio.com',
+      ),
+    );
+  }
 }
 
 class _LoginPageState extends State<LoginPageFrame> {
