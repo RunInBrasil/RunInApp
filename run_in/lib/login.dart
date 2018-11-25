@@ -19,7 +19,7 @@ SnackBar(content: Text('Este usuário já esta cadastrado'));
 final errorOnRetrieveEvaluation =
 SnackBar(content: Text('Houve um erro ao recuperar suas informações'));
 
-final String logoPath = 'assets/images/logo_wide.jpg';
+final String logoPath = 'assets/images/logo_transparent.png';
 final String background = 'assets/images/login_background.jpg';
 
 //final buttonColor = Color(0x99000000);
@@ -68,6 +68,13 @@ class _LoginPageState extends State<LoginPageFrame> {
     super.dispose();
   }
 
+
+  @override
+  void initState() {
+    FirebaseService.getInitialInfo();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!toRegister) {
@@ -83,7 +90,7 @@ class _LoginPageState extends State<LoginPageFrame> {
                 child: Container(
                   height: 158.0,
                   decoration: new BoxDecoration(
-                    shape: BoxShape.circle,
+                    shape: BoxShape.rectangle,
                       image: new DecorationImage(
                           image: new AssetImage(
                               logoPath),

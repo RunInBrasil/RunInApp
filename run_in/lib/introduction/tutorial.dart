@@ -6,7 +6,7 @@ import 'package:run_in/introduction/second_page.dart';
 import 'package:run_in/introduction/sixth_page.dart';
 import 'package:run_in/introduction/third_page.dart';
 
-final String backgroundImagePath = "assets/images/tutorial_cover.png";
+final String backgroundImagePath = "assets/images/tutorial_cover.jpg";
 
 class Tutorial extends StatefulWidget {
   @override

@@ -19,7 +19,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final failedConexionSnackbar = SnackBar(
     content: Text('Erro ao atualizar informações, verifique sua conexão'));
 
-final String backgroundImagePath = "assets/images/prepare_to_run.png";
+final String backgroundImagePath = "assets/images/prepare_to_run.jpg";
 
 const List<Text> menuItems = <Text>[
   const Text("Sair"),

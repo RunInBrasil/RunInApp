@@ -39,11 +39,12 @@ flutter:
   assets:
     - assets/icons/google_icon.png
     - assets/icons/gmail_icon.png
-    - assets/images/tutorial_cover.png
-    - assets/images/prepare_to_run.png
-    - assets/images/pre_login_background.png
+    - assets/images/tutorial_cover.jpg
+    - assets/images/prepare_to_run.jpg
+    - assets/images/pre_login_background.jpg
+    - assets/images/logo_transparent.png
     - assets/images/logo_wide.jpg
-    - assets/images/first_page.png
+    - assets/images/first_page.jpg
     - assets/images/third_page.jpg
     - assets/images/fourth_page.jpg
     - assets/images/fifth_page.jpg

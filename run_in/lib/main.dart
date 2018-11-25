@@ -14,7 +14,7 @@ import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 import 'package:run_in/utils/GlobalState.dart';
 import 'package:run_in/utils/constants.dart' as constants;
 
-final String logoPath = 'assets/images/logo_wide.jpg';
+final String logoPath = 'assets/images/logo_transparent.png';
 
 
 final routes = <String, WidgetBuilder> {
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         textTheme: Theme.of(context).textTheme.apply(
           bodyColor: constants.primaryColor,
-          displayColor: Colors.white,
+          displayColor: Colors.black,
         ),
         primaryColor: constants.primaryColor
       ),
@@ -80,6 +80,7 @@ class _MainPageFrameState extends State<MainPageFrame> {
   }
 
   void fetchInfo() async {
+    print('fetchInfo');
     if(await FirebaseService.isAuthenticated() == false) {
       Navigator.pushNamedAndRemoveUntil(context, '/pre_intro', (Route<dynamic> route) => false);
       return;

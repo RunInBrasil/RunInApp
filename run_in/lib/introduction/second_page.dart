@@ -24,7 +24,7 @@ class SecondPage extends StatelessWidget {
       child: new Align(
         alignment: FractionalOffset(0.0, 0.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             new Spacer(),

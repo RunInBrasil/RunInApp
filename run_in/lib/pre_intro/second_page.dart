@@ -6,7 +6,7 @@ import 'package:run_in/utils/constants.dart' as constants;
 import 'package:run_in/utils/GlobalState.dart';
 import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 
-final String image = 'assets/images/first_page.png';
+final String image = 'assets/images/first_page.jpg';
 final String title = 'Correr na esteira pode ser DIVERTIDO.';
 final String body = 'A esteira do seu condomínio, hotel ou academia pode ser sua grande aliada em busca da sua alta performance. Com treinos divertidos e desafiadores você alcançará outro nível de condicionamento.';
 
@@ -30,7 +30,6 @@ class SecondPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            new Spacer(),
             new Container(
               height: 164.0,
               decoration: new BoxDecoration(

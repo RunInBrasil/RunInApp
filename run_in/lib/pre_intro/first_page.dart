@@ -4,7 +4,7 @@ import 'package:run_in/objects/User.dart';
 import 'package:run_in/utils/GlobalState.dart';
 import 'package:run_in/utils/constants.dart' as constants;
 
-final String logoPath = 'assets/images/logo_wide.jpg';
+final String logoPath = 'assets/images/logo_transparent.png';
 
 class FirstPage extends StatelessWidget {
   TabController _tabController;
@@ -41,7 +41,7 @@ class FirstPage extends StatelessWidget {
                       height: 128.0,
                       width: 128.0,
                       decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
+                        shape: BoxShape.rectangle,
                         image: new DecorationImage(image: new AssetImage(logoPath))
                       ),
                     ),

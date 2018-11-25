@@ -8,7 +8,7 @@ import 'package:run_in/pre_intro/third_page.dart';
 import 'package:run_in/utils/constants.dart' as constants;
 
 
-final String backgroundImagePath = "assets/images/pre_login_background.png";
+final String backgroundImagePath = "assets/images/pre_login_background.jpg";
 
 class PreIntro extends StatefulWidget {
   @override
@@ -60,13 +60,16 @@ class TutorialState extends State<PreIntro>
                 children: pages,
             ),
           ),
-          new Container(
-            color: constants.primaryColor,
-            height: 64.0,
-            child: new RaisedButton(onPressed:() => goLoginPage(),
-                color: constants.primaryColor,
-                child: new Text('Inscreva-se agora', style: new TextStyle(color: Colors.white, fontSize: 16.0),),)
-            ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: new Container(
+              color: constants.primaryColor,
+              height: 64.0,
+              child: new RaisedButton(onPressed:() => goLoginPage(),
+                  color: constants.primaryColor,
+                  child: new Text('Inscreva-se agora', style: new TextStyle(color: Colors.white, fontSize: 16.0),),)
+              ),
+          ),
         ],
       ),
     );

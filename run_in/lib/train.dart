@@ -16,7 +16,7 @@ import 'package:run_in/services/FirebaseService.dart' as FirebaseService;
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final backgroundColor = Color(0xCC000000);
-final String backgroundImagePath = "assets/images/prepare_to_run.png";
+final String backgroundImagePath = "assets/images/prepare_to_run.jpg";
 
 
 class TrainPage extends StatelessWidget {
