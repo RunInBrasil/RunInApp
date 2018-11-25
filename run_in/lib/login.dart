@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPageFrame> {
                 child: Container(
                   height: 158.0,
                   decoration: new BoxDecoration(
-                    shape: BoxShape.rectangle,
+                    color: Colors.transparent,
                       image: new DecorationImage(
                           image: new AssetImage(
                               logoPath),
@@ -187,25 +187,25 @@ class _LoginPageState extends State<LoginPageFrame> {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: new RaisedButton(
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(32.0),
-                  ),
-                  onPressed: _signInGoogle,
-                  child: ListTile(
-//                    leading: const Icon(Icons.email),
-                    leading: const Image(
-                      image: AssetImage('assets/icons/google_icon.png'),
-                      height: 24.0,
-                    ),
-
-                    title: const Text('Entrar com Google'),
-                  ),
-                  color: buttonColor,
-                ),
-              ),
+//              Padding(
+//                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+//                child: new RaisedButton(
+//                  shape: new RoundedRectangleBorder(
+//                    borderRadius: new BorderRadius.circular(32.0),
+//                  ),
+//                  onPressed: _signInGoogle,
+//                  child: ListTile(
+////                    leading: const Icon(Icons.email),
+//                    leading: const Image(
+//                      image: AssetImage('assets/icons/google_icon.png'),
+//                      height: 24.0,
+//                    ),
+//
+//                    title: const Text('Entrar com Google'),
+//                  ),
+//                  color: buttonColor,
+//                ),
+//              ),
             ],
           ),
         ),
@@ -330,23 +330,23 @@ class _LoginPageState extends State<LoginPageFrame> {
                   color: buttonColor,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                child: new RaisedButton(
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(32.0),
-                  ),
-                  onPressed: _signInGoogle,
-                  child: ListTile(
-                    leading: const Image(
-                      image: AssetImage('assets/icons/google_icon.png'),
-                      height: 24.0,
-                    ),
-                    title: const Text('Entrar com Google'),
-                  ),
-                  color: buttonColor,
-                ),
-              ),
+//              Padding(
+//                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+//                child: new RaisedButton(
+//                  shape: new RoundedRectangleBorder(
+//                    borderRadius: new BorderRadius.circular(32.0),
+//                  ),
+//                  onPressed: _signInGoogle,
+//                  child: ListTile(
+//                    leading: const Image(
+//                      image: AssetImage('assets/icons/google_icon.png'),
+//                      height: 24.0,
+//                    ),
+//                    title: const Text('Entrar com Google'),
+//                  ),
+//                  color: buttonColor,
+//                ),
+//              ),
             ],
           ),
         ),

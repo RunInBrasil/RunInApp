@@ -201,8 +201,10 @@ class _TrainPageFrameState extends State<TrainPageFrame>
     if (Platform.isIOS) {
       childs.insert(0, backButton);
     }
-    var screen = new Column(
-      children: childs,
+    var screen = new SingleChildScrollView(
+      child: new Column(
+        children: childs,
+      ),
     );
     return screen;
   }

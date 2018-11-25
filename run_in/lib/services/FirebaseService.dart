@@ -52,7 +52,7 @@ void getInitialInfo() async {
 //  _auth.signOut();
 //  print('comecando');
 //  print(await _auth.currentUser());
-  configureFirebaseApp();
+//  configureFirebaseApp();
   if (await isAuthenticated() == false) {
     return;
   }
